@@ -1,0 +1,81 @@
+{
+  "experienceId": "archeo-medieval-sculpture-relic",
+  "version": "2.0",
+  "metadata": {
+    "title": "Romanesque Capital Fragment: Daniel in the Lions' Den",
+    "artistName": "Anonymous Master of Rates",
+    "creationYear": "c. 1180",
+    "medium": "Carved Granitic Stone with traces of polychromy",
+    "physicalDimensions": "48 x 52 x 45 cm",
+    "museumOrCollection": "National Archaeological Museum",
+    "curatorName": "Dr. Henrique Vasconcelos"
+  },
+  "exhibitionConstraints": {
+    "location": "Medieval Cloister Wing, Room 4",
+    "deviceTarget": "SpatialHeadsetMR",
+    "requireHeadphones": false,
+    "maxRecommendedSessionMinutes": 6.0,
+    "artistAutonomyBoundary": "Preserve spiritual gravitas. Virtual reconstructions of missing stone chunks must remain visually translucent to avoid confusing visitors about what is authentic stone vs. hypothetical restoration."
+  },
+  "chapters": [
+    {
+      "chapterId": "relic_chap_01",
+      "chapterTitle": "The Weathered Granite",
+      "perspective": "PhysicalArtwork",
+      "narrativeText": "Notice the deep incisions made by hand chisels into coarse-grain northern granite, surviving eight centuries of outdoor weathering.",
+      "suggestedDwellTimeSeconds": 25.0,
+      "hotspots": [
+        {
+          "id": "spot_pigment_traces",
+          "title": "Microscopic Lapis Lazuli Pigment",
+          "description": "Multi-spectral macro imaging reveals microscopic lapis lazuli and vermilion pigment traces in the lion's mane folds.",
+          "perspective": "PhysicalArtwork",
+          "contentType": "Image",
+          "normalizedCoordinates": { "x": 0.4, "y": 0.5, "z": 0.2 }
+        }
+      ]
+    },
+    {
+      "chapterId": "relic_chap_02",
+      "chapterTitle": "The Stone Mason's Craft",
+      "perspective": "ArtistVoice",
+      "narrativeText": "Hypothetical reconstruction of the medieval stone carver's guild: chisel angles, geometric compass ratios, and theological iconography.",
+      "suggestedDwellTimeSeconds": 35.0,
+      "hotspots": [
+        {
+          "id": "spot_toolmarks",
+          "title": "Toothed Claw Chisel Toolmarks",
+          "description": "3D photogrammetric normal map highlighting tool strokes unique to the 12th-century atelier.",
+          "perspective": "ArtistVoice",
+          "contentType": "Model3D",
+          "normalizedCoordinates": { "x": 0.6, "y": 0.35, "z": 0.1 }
+        }
+      ]
+    },
+    {
+      "chapterId": "relic_chap_03",
+      "chapterTitle": "Architectural Reintegration (Lost Monastery Portal)",
+      "perspective": "CuratorialLens",
+      "narrativeText": "The capital originally supported the north portal archway of the monastic abbey, destroyed during the 1755 earthquake.",
+      "suggestedDwellTimeSeconds": 30.0,
+      "hotspots": [
+        {
+          "id": "spot_portal_ghost",
+          "title": "Volumetric Arch Re-contextualization",
+          "description": "Semireflective holographic ghost of the entire portal archway hovering above the pedestal.",
+          "perspective": "CuratorialLens",
+          "contentType": "Model3D",
+          "normalizedCoordinates": { "x": 0.5, "y": 0.9, "z": 0.0 }
+        }
+      ]
+    }
+  ],
+  "tamEvaluation": {
+    "enabled": true,
+    "quickSurveyQuestions": [
+      "Did seeing the translucent architectural reconstruction help you understand the original church setting?",
+      "Was the spatial holographic display intuitive and non-distracting?",
+      "Did you feel the distinction between genuine stone and hypothetical reconstruction was clear?"
+    ]
+  }
+}

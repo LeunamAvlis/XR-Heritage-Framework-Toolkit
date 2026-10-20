@@ -1,0 +1,83 @@
+{
+  "experienceId": "serralves-carlos-lobo-broadcast",
+  "version": "2.0",
+  "metadata": {
+    "title": "End of Broadcast",
+    "artistName": "Carlos Lobo",
+    "creationYear": "2018",
+    "medium": "Chromogenic color print on baryta paper",
+    "physicalDimensions": "120 x 150 cm",
+    "museumOrCollection": "Serralves Contemporary Art Museum",
+    "curatorName": "Filipa Loureiro"
+  },
+  "exhibitionConstraints": {
+    "location": "Gallery 2, Serralves Contemporary Museum",
+    "deviceTarget": "MuseumTabletAR",
+    "requireHeadphones": true,
+    "maxRecommendedSessionMinutes": 4.5,
+    "artistAutonomyBoundary": "No animated overlays directly superimposed on the photographic emulsion. Preparatory field contact prints appear only via side drawer or off-canvas viewport."
+  },
+  "chapters": [
+    {
+      "chapterId": "chap_01",
+      "chapterTitle": "The Solitary Horizon",
+      "perspective": "PhysicalArtwork",
+      "narrativeText": "Observe the subtle transition between industrial stillness and twilight. Notice the grain structure achieved through analog medium-format film.",
+      "suggestedDwellTimeSeconds": 20.0,
+      "hotspots": [
+        {
+          "id": "spot_horizon",
+          "title": "Twilight Gradient",
+          "description": "The exact threshold between natural dusk and sodium-vapor lighting captured at 1/15th of a second.",
+          "perspective": "PhysicalArtwork",
+          "contentType": "Image",
+          "normalizedCoordinates": { "x": 0.5, "y": 0.65, "z": 0.0 }
+        }
+      ]
+    },
+    {
+      "chapterId": "chap_02",
+      "chapterTitle": "The Artist's Field Journey",
+      "perspective": "ArtistVoice",
+      "narrativeText": "Carlos Lobo reflects on wandering empty transmission towers at the borderlands: 'I waited four days for the specific fog density that would soften the steel silhouette.'",
+      "audioClipPath": "Audio/carlos_lobo_interview_clip1.mp3",
+      "suggestedDwellTimeSeconds": 30.0,
+      "hotspots": [
+        {
+          "id": "spot_draft_contact",
+          "title": "Contact Sheet Drafts",
+          "description": "Six alternative framing exposures taken minutes prior to the final selected shot.",
+          "perspective": "ArtistVoice",
+          "contentType": "InteractiveComparisonSlider",
+          "normalizedCoordinates": { "x": 0.25, "y": 0.35, "z": 0.0 }
+        }
+      ]
+    },
+    {
+      "chapterId": "chap_03",
+      "chapterTitle": "Curatorial Dialogue: Deconstructing Post-Industrial Silence",
+      "perspective": "CuratorialLens",
+      "narrativeText": "Filipa Loureiro contextualizes this work within contemporary Portuguese post-industrial topography, contrasting the technological transmission mast with territorial abandonment.",
+      "audioClipPath": "Audio/curator_loureiro_context.mp3",
+      "suggestedDwellTimeSeconds": 25.0,
+      "hotspots": [
+        {
+          "id": "spot_contextual_map",
+          "title": "Territorial Provenance",
+          "description": "Interactive map showing how this location intersects with adjacent photography in the exhibition room.",
+          "perspective": "CuratorialLens",
+          "contentType": "Model3D",
+          "normalizedCoordinates": { "x": 0.75, "y": 0.45, "z": 0.0 }
+        }
+      ]
+    }
+  ],
+  "tamEvaluation": {
+    "enabled": true,
+    "quickSurveyQuestions": [
+      "Did hearing the artist's field notes enrich your understanding of the photograph?",
+      "Was the tablet interface comfortable to hold during the visit?",
+      "Did the digital layer respect the atmosphere of the physical gallery?"
+    ]
+  }
+}
