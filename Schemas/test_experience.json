@@ -10,6 +10,9 @@
     "museumOrCollection": "Serralves Museum of Contemporary Art",
     "curatorName": "Filipa Loureiro"
   },
+  "exhibitionLocation": "Main Gallery, North Wing",
+  "requireHeadphones": true,
+  "maxRecommendedSessionMinutes": 4.0,
   "exhibitionConstraints": {
     "location": "Main Gallery, North Wing",
     "deviceTarget": "MuseumTabletAR",
@@ -71,6 +74,12 @@
         }
       ]
     }
+  ],
+  "enablePostExperienceSurvey": true,
+  "customTamQuestions": [
+    "Did this experience deepen your appreciation of the photograph?",
+    "Was the multi-perspective navigation (Artist vs Curator) clear and easy to use?",
+    "Did the digital mediation respect the quiet museum environment?"
   ],
   "tamEvaluation": {
     "enabled": true,

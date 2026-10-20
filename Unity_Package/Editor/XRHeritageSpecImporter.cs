@@ -1,6 +1,7 @@
 #if UNITY_EDITOR
 using System;
 using System.IO;
+using System.Text.RegularExpressions;
 using UnityEngine;
 using UnityEditor;
 
@@ -10,13 +11,12 @@ namespace HeritageXR.Framework.Editor
     {
         private string jsonFilePath = "";
         private TextAsset selectedJsonAsset;
-        private Vector2 scrollPos;
 
         [MenuItem("Tools/XR Heritage Framework/Import Experience Spec (JSON)", false, 10)]
         public static void ShowWindow()
         {
             var window = GetWindow<XRHeritageSpecImporter>("XR Heritage Importer");
-            window.minSize = new Vector2(450, 350);
+            window.minSize = new Vector2(450, 360);
             window.Show();
         }
 
@@ -27,7 +27,7 @@ namespace HeritageXR.Framework.Editor
             GUILayout.Label("Load an AI-generated Experience Specification (JSON) into Unity.", EditorStyles.wordWrappedMiniLabel);
             EditorGUILayout.Space(8);
 
-            selectedJsonAsset = (TextAsset)EditorGUILayout.ObjectField("JSON Asset:", selectedJsonAsset, typeof(TextAsset), false);
+            selectedJsonAsset = (TextAsset)EditorGUILayout.ObjectField("JSON Asset (in project):", selectedJsonAsset, typeof(TextAsset), false);
 
             if (selectedJsonAsset != null)
             {
@@ -64,20 +64,20 @@ namespace HeritageXR.Framework.Editor
 
             EditorGUILayout.Space(10);
             GUILayout.Box("", GUILayout.ExpandWidth(true), GUILayout.Height(1));
-            GUILayout.Label("Active Specs in Project: Look in 'Assets/XRHeritageData/'", EditorStyles.miniLabel);
+            GUILayout.Label("Target Output: 'Assets/XRHeritageData/'", EditorStyles.miniLabel);
         }
 
         private void ExecuteImport()
         {
-            string jsonText = "";
+            string rawJson = "";
 
             if (selectedJsonAsset != null)
             {
-                jsonText = selectedJsonAsset.text;
+                rawJson = selectedJsonAsset.text;
             }
             else if (!string.IsNullOrEmpty(jsonFilePath) && File.Exists(jsonFilePath))
             {
-                jsonText = File.ReadAllText(jsonFilePath);
+                rawJson = File.ReadAllText(jsonFilePath);
             }
             else
             {
@@ -85,30 +85,52 @@ namespace HeritageXR.Framework.Editor
                 return;
             }
 
+            if (string.IsNullOrEmpty(rawJson))
+            {
+                EditorUtility.DisplayDialog("Error", "Selected JSON file is empty.", "OK");
+                return;
+            }
+
             try
             {
-                // Create target directory
+                // Ensure target directory exists
                 string targetDir = "Assets/XRHeritageData";
                 if (!AssetDatabase.IsValidFolder(targetDir))
                 {
                     AssetDatabase.CreateFolder("Assets", "XRHeritageData");
                 }
 
-                // Parse into ScriptableObject
-                ArtworkExperienceData data = ScriptableObject.CreateInstance<ArtworkExperienceData>();
-                EditorJsonUtility.FromJsonOverwrite(jsonText, data);
+                // Preprocess JSON for Unity's JsonUtility (convert string enums to integer values)
+                string preparedJson = PreprocessJsonEnums(rawJson);
 
-                string safeName = string.IsNullOrEmpty(data.experienceId) ? "ImportedExperience" : data.experienceId;
+                // Create ScriptableObject instance
+                ArtworkExperienceData data = ScriptableObject.CreateInstance<ArtworkExperienceData>();
+
+                // Use standard JsonUtility (reliable with ScriptableObjects)
+                JsonUtility.FromJsonOverwrite(preparedJson, data);
+
+                // Fallback check: if experienceId is still empty, attempt direct regex extraction for core fields
+                if (string.IsNullOrEmpty(data.experienceId))
+                {
+                    Debug.LogWarning("[XR Heritage] Standard deserializer yielded empty ID. Running deep parser...");
+                    PopulateFallbackData(rawJson, data);
+                }
+
+                string safeName = string.IsNullOrEmpty(data.experienceId) ? "HeritageExperience" : data.experienceId;
                 string assetPath = $"{targetDir}/{safeName}_Data.asset";
 
+                // Save asset to database
                 AssetDatabase.CreateAsset(data, assetPath);
+                EditorUtility.SetDirty(data);
                 AssetDatabase.SaveAssets();
                 AssetDatabase.Refresh();
 
                 Selection.activeObject = data;
-                EditorUtility.DisplayDialog("Success!", $"Experience Data created at:\n{assetPath}", "OK");
+                EditorUtility.DisplayDialog("Success!", 
+                    $"Experience Data successfully created!\n\nTitle: {data.metadata.title}\nArtist: {data.metadata.artistName}\nChapters: {data.chapters.Count}\nSaved at: {assetPath}", 
+                    "OK");
 
-                // Auto-bind to ModernContentManager in scene if present
+                // Auto-bind to ModernContentManager in the open scene if present
                 var mgr = UnityEngine.Object.FindAnyObjectByType<ModernContentManager>();
                 if (mgr != null)
                 {
@@ -128,6 +150,55 @@ namespace HeritageXR.Framework.Editor
                 EditorUtility.DisplayDialog("Import Error", $"Failed to parse JSON:\n{ex.Message}", "OK");
                 Debug.LogError(ex);
             }
+        }
+
+        // Unity's JsonUtility requires enums to be numeric values (0, 1, 2) rather than string names
+        private string PreprocessJsonEnums(string json)
+        {
+            string processed = json;
+
+            // PerspectiveType enums
+            processed = Regex.Replace(processed, "\"perspective\"\\s*:\\s*\"PhysicalArtwork\"", "\"perspective\": 0", RegexOptions.IgnoreCase);
+            processed = Regex.Replace(processed, "\"perspective\"\\s*:\\s*\"ArtistVoice\"", "\"perspective\": 1", RegexOptions.IgnoreCase);
+            processed = Regex.Replace(processed, "\"perspective\"\\s*:\\s*\"CuratorialLens\"", "\"perspective\": 2", RegexOptions.IgnoreCase);
+            processed = Regex.Replace(processed, "\"perspective\"\\s*:\\s*\"ComparativeAnalysis\"", "\"perspective\": 3", RegexOptions.IgnoreCase);
+
+            // MediaContentType enums
+            processed = Regex.Replace(processed, "\"contentType\"\\s*:\\s*\"Image\"", "\"contentType\": 0", RegexOptions.IgnoreCase);
+            processed = Regex.Replace(processed, "\"contentType\"\\s*:\\s*\"AudioVoiceover\"", "\"contentType\": 1", RegexOptions.IgnoreCase);
+            processed = Regex.Replace(processed, "\"contentType\"\\s*:\\s*\"VideoNarrative\"", "\"contentType\": 2", RegexOptions.IgnoreCase);
+            processed = Regex.Replace(processed, "\"contentType\"\\s*:\\s*\"Model3D\"", "\"contentType\": 3", RegexOptions.IgnoreCase);
+            processed = Regex.Replace(processed, "\"contentType\"\\s*:\\s*\"InteractiveComparisonSlider\"", "\"contentType\": 4", RegexOptions.IgnoreCase);
+
+            return processed;
+        }
+
+        // Robust fallback in case of nested mismatch
+        private void PopulateFallbackData(string json, ArtworkExperienceData data)
+        {
+            var matchId = Regex.Match(json, "\"experienceId\"\\s*:\\s*\"([^\"]+)\"");
+            if (matchId.Success) data.experienceId = matchId.Groups[1].Value;
+
+            var matchTitle = Regex.Match(json, "\"title\"\\s*:\\s*\"([^\"]+)\"");
+            if (matchTitle.Success) data.metadata.title = matchTitle.Groups[1].Value;
+
+            var matchArtist = Regex.Match(json, "\"artistName\"\\s*:\\s*\"([^\"]+)\"");
+            if (matchArtist.Success) data.metadata.artistName = matchArtist.Groups[1].Value;
+
+            var matchYear = Regex.Match(json, "\"creationYear\"\\s*:\\s*\"([^\"]+)\"");
+            if (matchYear.Success) data.metadata.creationYear = matchYear.Groups[1].Value;
+
+            var matchMedium = Regex.Match(json, "\"medium\"\\s*:\\s*\"([^\"]+)\"");
+            if (matchMedium.Success) data.metadata.medium = matchMedium.Groups[1].Value;
+
+            var matchDimensions = Regex.Match(json, "\"physicalDimensions\"\\s*:\\s*\"([^\"]+)\"");
+            if (matchDimensions.Success) data.metadata.physicalDimensions = matchDimensions.Groups[1].Value;
+
+            var matchMuseum = Regex.Match(json, "\"museumOrCollection\"\\s*:\\s*\"([^\"]+)\"");
+            if (matchMuseum.Success) data.metadata.museumOrCollection = matchMuseum.Groups[1].Value;
+
+            var matchCurator = Regex.Match(json, "\"curatorName\"\\s*:\\s*\"([^\"]+)\"");
+            if (matchCurator.Success) data.metadata.curatorName = matchCurator.Groups[1].Value;
         }
 
         private void SetupSceneHierarchy()
