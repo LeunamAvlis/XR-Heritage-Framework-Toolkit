@@ -1,4 +1,4 @@
-# Intelligent XR Heritage Framework & Unity Toolkit (v2.0)
+# XR Heritage Framework & Unity Toolkit (v2.0)
 
 [![Unity 2021.3+](https://img.shields.io/badge/Unity-2021.3%2B-blue.svg)](https://unity.com)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
