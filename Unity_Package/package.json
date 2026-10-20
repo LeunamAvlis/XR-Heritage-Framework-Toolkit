@@ -1,6 +1,6 @@
 {
   "name": "com.heritage.xr-framework",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "displayName": "Intelligent XR Heritage Framework Toolkit",
   "description": "Production-ready Unity toolkit for conceptualizing, mediating, and evaluating multi-perspective XR experiences in museums and cultural heritage institutions. Developed based on doctoral research at UCP Porto.",
   "unity": "2021.3",
@@ -14,7 +14,7 @@
     "ar-foundation"
   ],
   "author": {
-    "name": "Manuel Silva & Prof. Luís Teixeira",
+    "name": "Manuel Silva",
     "email": "mosilva@ucp.pt",
     "url": "https://artes.porto.ucp.pt"
   },
