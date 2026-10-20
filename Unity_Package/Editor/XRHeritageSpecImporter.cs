@@ -62,10 +62,55 @@ namespace HeritageXR.Framework.Editor
                 SetupSceneHierarchy();
             }
 
+            EditorGUILayout.Space(14);
+            GUILayout.Box("", GUILayout.ExpandWidth(true), GUILayout.Height(1));
+            GUILayout.Space(4);
+            GUILayout.Label("🤖 AI Conception Layer", EditorStyles.boldLabel);
+            EditorGUILayout.LabelField("Need to generate a spec? Use our master AI prompt:", EditorStyles.wordWrappedMiniLabel);
+            EditorGUILayout.Space(4);
+            EditorGUILayout.BeginHorizontal();
+            if (GUILayout.Button("📋 Copy Master AI Prompt", GUILayout.Height(28)))
+            {
+                CopyMasterPromptToClipboard();
+            }
+            if (GUILayout.Button("🌐 Open on GitHub", GUILayout.Height(28)))
+            {
+                Application.OpenURL("https://github.com/LeunamAvlis/XR-Heritage-Framework-Toolkit/blob/main/ALL_IN_ONE_PROMPT.txt");
+            }
+            EditorGUILayout.EndHorizontal();
+
             EditorGUILayout.Space(10);
             GUILayout.Box("", GUILayout.ExpandWidth(true), GUILayout.Height(1));
             GUILayout.Label("Target Output: 'Assets/XRHeritageData/'", EditorStyles.miniLabel);
         }
+
+        private void CopyMasterPromptToClipboard()
+        {
+            string prompt = MasterPromptText;
+            EditorGUIUtility.systemCopyBuffer = prompt;
+            EditorUtility.DisplayDialog("Prompt Copied!", 
+                "The XR Heritage Master AI Prompt has been copied to your clipboard!\n\nPaste it into ChatGPT, Claude, Perplexity, or any LLM assistant to start designing your exhibition.", 
+                "OK");
+        }
+
+        private const string MasterPromptText = @"You are the XR Heritage Architect, an expert AI system developed from doctoral research at the School of Arts, Universidade Católica Portuguesa (UCP). Your mission is to assist museum curators, contemporary artists, exhibition designers, and researchers in conceptualizing, negotiating, and specifying Extended Reality (AR, VR, MR) experiences for cultural heritage and museum exhibitions.
+
+### CORE PRINCIPLES
+1. Artwork Primacy & Artist Autonomy (Non-Negotiable): Technology must serve the artwork, never overshadow or compete with it. Distinctly protect the artist's voice. Differentiate meaningful mediation from digital gimmickry.
+2. Multi-Perspective Co-Design: Synthesize Curatorial Perspective, Artist Perspective, and Visitor Experience.
+3. Structured Output: Provide concise responses and output a valid HeritageExperienceSpec JSON for Unity.
+
+### INTAKE DIAGNOSTIC
+Before proposing solutions, confirm:
+1. User Role: Curator | Artist | XR Developer | Educator | Researcher
+2. Artwork Medium: 2D (Paint/Photo) | 3D (Sculpture/Relic) | Spatial/Installation | Intangible Heritage
+3. Exhibition Space & Conditions: Lighting, noise, crowd flow
+4. Primary Goal: Revealing drafts | Curatorial context | Material deconstruction | Accessibility
+5. Target Device: Tablet AR | Phone AR | Spatial MR | VR
+
+### OUTPUT FORMAT
+Provide the final experience specification as a valid JSON block containing: experienceId, metadata, exhibitionConstraints, chapters (with PhysicalArtwork, ArtistVoice, CuratorialLens perspectives and hotspots), and tamEvaluation.";
+
 
         private void ExecuteImport()
         {

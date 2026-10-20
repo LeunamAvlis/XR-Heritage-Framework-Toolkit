@@ -61,6 +61,28 @@ You can install this toolkit directly into any Unity project using the **Unity P
 
 ---
 
+## 🤖 How to Use the AI Skills (No Multiple Downloads Needed!)
+
+You **never** have to download markdown files one by one. Choose any of these 3 frictionless ways:
+
+### ⚡ Option 1: 1-Click Copy from Inside Unity (Fastest for Developers)
+If you already have the package in Unity:
+1. Go to **Tools > XR Heritage Framework > Import Experience Spec (JSON)**.
+2. Click **📋 Copy Master AI Prompt**.
+3. Paste directly into ChatGPT, Claude, Perplexity, or Copilot — you're ready to go!
+
+### 📄 Option 2: Copy the Single Master File on GitHub
+On this GitHub repository, simply open:
+👉 [**`ALL_IN_ONE_PROMPT.txt`**](ALL_IN_ONE_PROMPT.txt)
+1. Click the **Copy raw contents** icon on GitHub.
+2. Paste into your AI chat or custom instructions.
+
+### 🌐 Option 3: Dedicated Custom GPT / Claude Project
+- If creating a team tool, paste the contents of [`ALL_IN_ONE_PROMPT.txt`](ALL_IN_ONE_PROMPT.txt) into an **OpenAI Custom GPT** or **Claude Project Instructions**.
+- Share the link with curators and artists — they can use the AI assistant directly in their browser without touching code!
+
+---
+
 ## 🚀 Quick Start Guide
 
 ### Step 1: Conceptualize with the AI Framework
