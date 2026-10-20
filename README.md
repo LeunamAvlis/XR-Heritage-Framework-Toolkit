@@ -6,7 +6,7 @@
 
 An open-source, doctoral-research-backed framework bridging **AI-assisted co-design**, **multi-perspective curatorial mediation**, and **production-ready XR implementation** for museums and cultural heritage institutions.
 
-Developed by **Manuel Silva** and **Prof. Luís Teixeira** at the School of Arts, Portuguese Catholic University (*Universidade Católica Portuguesa - UCP*), Porto.
+Developed by **Manuel Silva** with supervision from **Prof. Luís Teixeira** at the School of Arts, Portuguese Catholic University (*Universidade Católica Portuguesa - UCP*), Porto.
 
 ---
 
