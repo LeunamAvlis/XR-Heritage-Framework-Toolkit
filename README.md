@@ -50,9 +50,9 @@ You can install this toolkit directly into any Unity project using the **Unity P
 2. Click the **`+`** (plus) icon in the top-left corner and select **Add package from git URL...**
 3. Paste the following URL and click **Add**:
    ```
-   https://github.com/LeunamAvlis/xr-heritage-framework.git?path=/Unity_Package
+   https://github.com/LeunamAvlis/XR-Heritage-Framework-Toolkit.git?path=/Unity_Package
    ```
-   *(Replace `LeunamAvlis/xr-heritage-framework` with your repository URL).*
+  
 
 ### Method 2: Manual / Local Installation
 1. Download or clone this repository.
