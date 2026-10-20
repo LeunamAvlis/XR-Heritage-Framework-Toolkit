@@ -7,20 +7,20 @@ namespace HeritageXR.Framework
     [Serializable]
     public enum PerspectiveType
     {
-        PhysicalArtwork,
-        ArtistVoice,
-        CuratorialLens,
-        ComparativeAnalysis
+        PhysicalArtwork = 0,
+        ArtistVoice = 1,
+        CuratorialLens = 2,
+        ComparativeAnalysis = 3
     }
 
     [Serializable]
     public enum MediaContentType
     {
-        Image,
-        AudioVoiceover,
-        VideoNarrative,
-        Model3D,
-        InteractiveComparisonSlider
+        Image = 0,
+        AudioVoiceover = 1,
+        VideoNarrative = 2,
+        Model3D = 3,
+        InteractiveComparisonSlider = 4
     }
 
     [Serializable]
@@ -30,9 +30,9 @@ namespace HeritageXR.Framework
         public string title;
         [TextArea(2, 5)]
         public string description;
-        public Vector3 localNormalizedPosition; // Position relative to artwork canvas (0..1)
         public PerspectiveType perspective;
         public MediaContentType contentType;
+        public Vector3 normalizedCoordinates; // Position relative to artwork canvas (0..1)
         public string mediaAssetPath;
         public string audioClipPath;
     }
@@ -45,8 +45,9 @@ namespace HeritageXR.Framework
         public PerspectiveType perspective;
         [TextArea(3, 8)]
         public string narrativeText;
-        public string mediaUrlOrPath;
-        public float suggestedDwellTimeSeconds = 15f;
+        public string mediaAssetPath;
+        public string audioClipPath;
+        public float suggestedDwellTimeSeconds = 20f;
         public List<HotspotItem> hotspots = new List<HotspotItem>();
     }
 
@@ -62,22 +63,36 @@ namespace HeritageXR.Framework
         public string curatorName;
     }
 
+    [Serializable]
+    public class ExhibitionConstraints
+    {
+        public string location;
+        public string deviceTarget;
+        public bool requireHeadphones;
+        public float maxRecommendedSessionMinutes = 5f;
+        [TextArea(2, 4)]
+        public string artistAutonomyBoundary;
+    }
+
+    [Serializable]
+    public class TamEvaluationSettings
+    {
+        public bool enabled = true;
+        public List<string> quickSurveyQuestions = new List<string>();
+    }
+
     [CreateAssetMenu(fileName = "NewArtworkExperience", menuName = "XR Heritage/Artwork Experience Data", order = 1)]
     public class ArtworkExperienceData : ScriptableObject
     {
         public string experienceId;
+        public string version = "2.0";
         public ArtworkMetadata metadata = new ArtworkMetadata();
-        
-        [Header("Exhibition Constraints")]
-        public string exhibitionLocation;
-        public bool requireHeadphones = false;
-        public float maxRecommendedSessionMinutes = 5f;
+        public ExhibitionConstraints exhibitionConstraints = new ExhibitionConstraints();
 
         [Header("Structured Multi-Perspective Chapters")]
         public List<ContentChapter> chapters = new List<ContentChapter>();
 
         [Header("In-Situ TAM Evaluation")]
-        public bool enablePostExperienceSurvey = true;
-        public List<string> customTamQuestions = new List<string>();
+        public TamEvaluationSettings tamEvaluation = new TamEvaluationSettings();
     }
 }

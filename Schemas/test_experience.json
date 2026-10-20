@@ -1,0 +1,83 @@
+{
+  "experienceId": "test-heritage-experience-01",
+  "version": "2.0",
+  "metadata": {
+    "title": "Stillness and Resonance",
+    "artistName": "Carlos Lobo",
+    "creationYear": "2024",
+    "medium": "Medium-format analog photography on baryta paper",
+    "physicalDimensions": "110 x 140 cm",
+    "museumOrCollection": "Serralves Museum of Contemporary Art",
+    "curatorName": "Filipa Loureiro"
+  },
+  "exhibitionConstraints": {
+    "location": "Main Gallery, North Wing",
+    "deviceTarget": "MuseumTabletAR",
+    "requireHeadphones": true,
+    "maxRecommendedSessionMinutes": 4.0,
+    "artistAutonomyBoundary": "No intrusive digital animations on top of the photograph. Sketches and interviews must appear exclusively via the overlay drawers."
+  },
+  "chapters": [
+    {
+      "chapterId": "chap_01_physical",
+      "chapterTitle": "1. The Physical Composition",
+      "perspective": "PhysicalArtwork",
+      "narrativeText": "Observe the subtle chromatic gradient between the industrial tower and the overcast sky. Analog grain gives tactile depth to the quiet horizon.",
+      "suggestedDwellTimeSeconds": 20.0,
+      "hotspots": [
+        {
+          "id": "spot_gradient",
+          "title": "Atmospheric Twilight",
+          "description": "Captured at dusk with an exposure time of 1/8s, capturing ambient sodium mist.",
+          "perspective": "PhysicalArtwork",
+          "contentType": "Image",
+          "normalizedCoordinates": { "x": 0.5, "y": 0.7, "z": 0.0 }
+        }
+      ]
+    },
+    {
+      "chapterId": "chap_02_artist",
+      "chapterTitle": "2. The Artist's Vision",
+      "perspective": "ArtistVoice",
+      "narrativeText": "Carlos Lobo: 'I wanted to capture the lingering resonance of obsolete transmission antennas. The silence of broadcasting towers after signals cease.'",
+      "audioClipPath": "Audio/carlos_lobo_test_voice.mp3",
+      "suggestedDwellTimeSeconds": 30.0,
+      "hotspots": [
+        {
+          "id": "spot_contact_sheet",
+          "title": "Field Contact Sheet",
+          "description": "Exploratory roll film exposures taken earlier that morning before selecting this precise angle.",
+          "perspective": "ArtistVoice",
+          "contentType": "InteractiveComparisonSlider",
+          "normalizedCoordinates": { "x": 0.3, "y": 0.4, "z": 0.0 }
+        }
+      ]
+    },
+    {
+      "chapterId": "chap_03_curator",
+      "chapterTitle": "3. Curatorial Analysis",
+      "perspective": "CuratorialLens",
+      "narrativeText": "Filipa Loureiro deconstructs the artwork: 'This work bridges industrial archaeology and contemporary landscape contemplation, creating a dialogue with the museum's architecture.'",
+      "audioClipPath": "Audio/filipa_loureiro_context.mp3",
+      "suggestedDwellTimeSeconds": 25.0,
+      "hotspots": [
+        {
+          "id": "spot_territorial_context",
+          "title": "Territory and Memory",
+          "description": "Historical mapping contextualizing decommissioned telecommunication infrastructure in Northern Portugal.",
+          "perspective": "CuratorialLens",
+          "contentType": "Model3D",
+          "normalizedCoordinates": { "x": 0.75, "y": 0.45, "z": 0.0 }
+        }
+      ]
+    }
+  ],
+  "tamEvaluation": {
+    "enabled": true,
+    "quickSurveyQuestions": [
+      "Did this experience deepen your appreciation of the photograph?",
+      "Was the multi-perspective navigation (Artist vs Curator) clear and easy to use?",
+      "Did the digital mediation respect the quiet museum environment?"
+    ]
+  }
+}
