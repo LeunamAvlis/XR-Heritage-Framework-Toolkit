@@ -90,13 +90,16 @@ On this GitHub repository, simply open:
 2. Run the diagnostic intake questionnaire from [`AI_Skills/Skill_1_Intake_and_Profiling.md`](AI_Skills/Skill_1_Intake_and_Profiling.md).
 3. The AI will output a completed, validated **Heritage Experience Specification (JSON)**.
 
-### Step 2: Import into Unity
+### Step 2: Import into Unity & Install Target SDKs
 1. In Unity, click the top menu: **Tools > XR Heritage Framework > Import Experience Spec (JSON)**.
 2. Select your AI-generated JSON file (or use one of the samples in `Schemas/`).
 3. Click **Import & Generate ScriptableObject**:
    - Unity parses the JSON and creates an `ArtworkExperienceData` asset in `Assets/XRHeritageData/`.
+   - **Automatic SDK Detection**: If the experience specifies Mobile AR (tablets/phones) or VR (headsets), the importer automatically prompts to install the official Unity SDKs (**AR Foundation + ARCore/ARKit** or **OpenXR + XR Interaction Toolkit**) into your project with a single click!
 4. Click **Setup Scene with Heritage UI Rig**:
    - Unity instantiates the complete GameObject hierarchy: `ModernContentManager`, `ArtworkLayerToggle`, and `InAppTamSurveyManager`.
+
+*(You can also trigger SDK installation anytime from the menu: **Tools > XR Heritage Framework > Install Required XR SDKs**).*
 
 ### Step 3: Test & Collect Visitor Data
 - The UI provides interactive touch pagination, swipe gestures, and perspective filters (*All*, *Artist Voice*, *Curatorial Lens*).

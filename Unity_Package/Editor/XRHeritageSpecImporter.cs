@@ -16,8 +16,32 @@ namespace HeritageXR.Framework.Editor
         public static void ShowWindow()
         {
             var window = GetWindow<XRHeritageSpecImporter>("XR Heritage Importer");
-            window.minSize = new Vector2(450, 360);
+            window.minSize = new Vector2(460, 420);
             window.Show();
+        }
+
+        [MenuItem("Tools/XR Heritage Framework/Install Required XR SDKs", false, 20)]
+        public static void ShowSdkInstaller()
+        {
+            int choice = EditorUtility.DisplayDialogComplex(
+                "XR Heritage Framework: SDK Installer",
+                "Select which hardware stack you are targeting for this museum project:\n\n" +
+                "• Mobile AR: Installs AR Foundation, ARCore (Android), and ARKit (iOS).\n" +
+                "• VR / OpenXR: Installs OpenXR, XR Plugin Management, and XR Interaction Toolkit.\n" +
+                "• Mixed Reality: Installs OpenXR and AR Foundation for spatial passthrough.",
+                "Mobile AR SDKs",
+                "Cancel",
+                "VR / OpenXR SDKs"
+            );
+
+            if (choice == 0)
+            {
+                XRHeritageSDKManager.InstallMobileArSdk();
+            }
+            else if (choice == 2)
+            {
+                XRHeritageSDKManager.InstallVrOpenXrSdk();
+            }
         }
 
         private void OnGUI()
@@ -76,6 +100,23 @@ namespace HeritageXR.Framework.Editor
             if (GUILayout.Button("🌐 Open on GitHub", GUILayout.Height(28)))
             {
                 Application.OpenURL("https://github.com/LeunamAvlis/XR-Heritage-Framework-Toolkit/blob/main/ALL_IN_ONE_PROMPT.txt");
+            }
+            EditorGUILayout.EndHorizontal();
+
+            EditorGUILayout.Space(10);
+            GUILayout.Box("", GUILayout.ExpandWidth(true), GUILayout.Height(1));
+            GUILayout.Space(4);
+            GUILayout.Label("🛠️ Required XR SDKs Installer", EditorStyles.boldLabel);
+            EditorGUILayout.LabelField("Install official Unity packages for target hardware:", EditorStyles.wordWrappedMiniLabel);
+            EditorGUILayout.Space(4);
+            EditorGUILayout.BeginHorizontal();
+            if (GUILayout.Button("📱 Mobile AR (AR Foundation)", GUILayout.Height(28)))
+            {
+                XRHeritageSDKManager.InstallMobileArSdk();
+            }
+            if (GUILayout.Button("🥽 VR / Spatial (OpenXR)", GUILayout.Height(28)))
+            {
+                XRHeritageSDKManager.InstallVrOpenXrSdk();
             }
             EditorGUILayout.EndHorizontal();
 
@@ -189,6 +230,9 @@ Provide the final experience specification as a valid JSON block containing: exp
                         Debug.Log("[XR Heritage Framework] Auto-assigned data to ModernContentManager in open scene.");
                     }
                 }
+
+                // Check target hardware and prompt to install required Unity SDKs
+                XRHeritageSDKManager.CheckAndPromptSdkForExperience(data);
             }
             catch (Exception ex)
             {
