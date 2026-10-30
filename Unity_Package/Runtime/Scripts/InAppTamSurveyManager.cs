@@ -39,6 +39,7 @@ namespace HeritageXR.Framework
         [SerializeField] private InputField commentInputField;
 
         [Header("Action Buttons")]
+        [SerializeField] private Button openSurveyButton;
         [SerializeField] private Button submitButton;
         [SerializeField] private Button skipButton;
 
@@ -52,10 +53,22 @@ namespace HeritageXR.Framework
             logFilePath = Path.Combine(Application.persistentDataPath, "TAM_Visitor_Results.csv");
             EnsureCsvHeaderExists();
 
+            if (openSurveyButton != null) openSurveyButton.onClick.AddListener(OpenSurvey);
             if (submitButton != null) submitButton.onClick.AddListener(SubmitSurvey);
             if (skipButton != null) skipButton.onClick.AddListener(DismissSurvey);
 
             if (surveyPanelRoot != null) surveyPanelRoot.SetActive(false);
+
+            var contentMgr = GetComponent<ModernContentManager>();
+            if (contentMgr != null)
+            {
+                contentMgr.OnExperienceCompleted += OpenSurvey;
+            }
+        }
+
+        public void OpenSurvey()
+        {
+            PromptSurvey(currentExperienceId);
         }
 
         public void PromptSurvey(string experienceId)

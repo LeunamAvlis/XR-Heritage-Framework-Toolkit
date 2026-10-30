@@ -20,6 +20,15 @@ namespace HeritageXR.Framework
         [SerializeField] private AudioClip artistReflectionClip;
         [SerializeField] private AudioClip curatorialContextClip;
 
+        private void Awake()
+        {
+            var contentMgr = GetComponent<ModernContentManager>();
+            if (contentMgr != null)
+            {
+                contentMgr.OnChapterChanged += (index, chapter) => SetLayerMode(chapter.perspective);
+            }
+        }
+
         public void SetLayerMode(PerspectiveType mode)
         {
             switch (mode)

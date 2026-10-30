@@ -11,13 +11,31 @@ namespace HeritageXR.Framework.Editor
     {
         private string jsonFilePath = "";
         private TextAsset selectedJsonAsset;
+        private ArtworkExperienceData lastImportedData;
+        private Vector2 scrollPos;
 
+        [MenuItem("Tools/XR Heritage Framework/Experience Setup Wizard", false, 5)]
         [MenuItem("Tools/XR Heritage Framework/Import Experience Spec (JSON)", false, 10)]
         public static void ShowWindow()
         {
-            var window = GetWindow<XRHeritageSpecImporter>("XR Heritage Importer");
-            window.minSize = new Vector2(460, 420);
+            var window = GetWindow<XRHeritageSpecImporter>("XR Heritage Wizard");
+            window.minSize = new Vector2(490, 560);
             window.Show();
+        }
+
+        [MenuItem("Tools/XR Heritage Framework/Build Playable XR Sample Scene", false, 15)]
+        public static void QuickBuildScene()
+        {
+            ArtworkExperienceData data = Selection.activeObject as ArtworkExperienceData;
+            if (data == null)
+            {
+                string[] guids = AssetDatabase.FindAssets("t:ArtworkExperienceData");
+                if (guids.Length > 0)
+                {
+                    data = AssetDatabase.LoadAssetAtPath<ArtworkExperienceData>(AssetDatabase.GUIDToAssetPath(guids[0]));
+                }
+            }
+            XRHeritageSceneBuilder.BuildCompleteExperienceScene(data);
         }
 
         [MenuItem("Tools/XR Heritage Framework/Install Required XR SDKs", false, 20)]
@@ -46,10 +64,42 @@ namespace HeritageXR.Framework.Editor
 
         private void OnGUI()
         {
-            GUILayout.Space(10);
-            GUILayout.Label("🏛️ XR Heritage Framework: Spec Importer", EditorStyles.boldLabel);
-            GUILayout.Label("Load an AI-generated Experience Specification (JSON) into Unity.", EditorStyles.wordWrappedMiniLabel);
+            scrollPos = EditorGUILayout.BeginScrollView(scrollPos);
+
+            GUILayout.Space(8);
+            GUILayout.Label("🏛️ XR Heritage Framework — Guided Experience Wizard", EditorStyles.boldLabel);
+            GUILayout.Label("Follow the 3 steps below to co-design, import, and build a playable museum XR experience.", EditorStyles.wordWrappedMiniLabel);
             EditorGUILayout.Space(8);
+
+            // =====================================================================
+            // STEP 1: AI CONCEPTION & VISUAL PDF REPORT STUDIO
+            // =====================================================================
+            EditorGUILayout.BeginVertical("box");
+            GUILayout.Label("STEP 1: Co-Creation, Visual Maquettes & PDF Report", EditorStyles.boldLabel);
+            EditorGUILayout.LabelField("Use our AI Master Prompt or open the Visual Co-Creation Studio to preview spatial gallery maquettes, export a PDF Exhibition Dossier, and download the .json file.", EditorStyles.wordWrappedMiniLabel);
+            EditorGUILayout.Space(4);
+
+            EditorGUILayout.BeginHorizontal();
+            if (GUILayout.Button("📋 Copy Master AI Prompt", GUILayout.Height(28)))
+            {
+                CopyMasterPromptToClipboard();
+            }
+            if (GUILayout.Button("📐 Visual Studio & PDF Report", GUILayout.Height(28)))
+            {
+                Application.OpenURL("https://htmlpreview.github.io/?https://github.com/LeunamAvlis/XR-Heritage-Framework-Toolkit/blob/main/Web_Companion/index.html");
+            }
+            EditorGUILayout.EndHorizontal();
+            EditorGUILayout.EndVertical();
+
+            EditorGUILayout.Space(8);
+
+            // =====================================================================
+            // STEP 2: IMPORT JSON SPECIFICATION & AUTO-INSTALL XR SDKS
+            // =====================================================================
+            EditorGUILayout.BeginVertical("box");
+            GUILayout.Label("STEP 2: Import JSON Spec & Check Required SDKs", EditorStyles.boldLabel);
+            EditorGUILayout.LabelField("Select the .json specification file generated in Step 1 to create your Unity ScriptableObject and install the matching AR/VR SDKs.", EditorStyles.wordWrappedMiniLabel);
+            EditorGUILayout.Space(4);
 
             selectedJsonAsset = (TextAsset)EditorGUILayout.ObjectField("JSON Asset (in project):", selectedJsonAsset, typeof(TextAsset), false);
 
@@ -72,57 +122,53 @@ namespace HeritageXR.Framework.Editor
                 EditorGUILayout.EndHorizontal();
             }
 
-            EditorGUILayout.Space(12);
+            EditorGUILayout.Space(6);
 
-            if (GUILayout.Button("🚀 Import & Generate ScriptableObject", GUILayout.Height(38)))
+            if (GUILayout.Button("🚀 1. Import JSON & Check Required SDKs", GUILayout.Height(36)))
             {
                 ExecuteImport();
             }
 
-            EditorGUILayout.Space(8);
-
-            if (GUILayout.Button("🎨 Setup Scene with Heritage UI Rig", GUILayout.Height(30)))
-            {
-                SetupSceneHierarchy();
-            }
-
-            EditorGUILayout.Space(14);
-            GUILayout.Box("", GUILayout.ExpandWidth(true), GUILayout.Height(1));
-            GUILayout.Space(4);
-            GUILayout.Label("🤖 AI Conception Layer", EditorStyles.boldLabel);
-            EditorGUILayout.LabelField("Need to generate a spec? Use our master AI prompt:", EditorStyles.wordWrappedMiniLabel);
             EditorGUILayout.Space(4);
             EditorGUILayout.BeginHorizontal();
-            if (GUILayout.Button("📋 Copy Master AI Prompt", GUILayout.Height(28)))
-            {
-                CopyMasterPromptToClipboard();
-            }
-            if (GUILayout.Button("🌐 Open on GitHub", GUILayout.Height(28)))
-            {
-                Application.OpenURL("https://github.com/LeunamAvlis/XR-Heritage-Framework-Toolkit/blob/main/ALL_IN_ONE_PROMPT.txt");
-            }
-            EditorGUILayout.EndHorizontal();
-
-            EditorGUILayout.Space(10);
-            GUILayout.Box("", GUILayout.ExpandWidth(true), GUILayout.Height(1));
-            GUILayout.Space(4);
-            GUILayout.Label("🛠️ Required XR SDKs Installer", EditorStyles.boldLabel);
-            EditorGUILayout.LabelField("Install official Unity packages for target hardware:", EditorStyles.wordWrappedMiniLabel);
-            EditorGUILayout.Space(4);
-            EditorGUILayout.BeginHorizontal();
-            if (GUILayout.Button("📱 Mobile AR (AR Foundation)", GUILayout.Height(28)))
+            if (GUILayout.Button("📱 Install Mobile AR SDKs", GUILayout.Height(24)))
             {
                 XRHeritageSDKManager.InstallMobileArSdk();
             }
-            if (GUILayout.Button("🥽 VR / Spatial (OpenXR)", GUILayout.Height(28)))
+            if (GUILayout.Button("🥽 Install VR / OpenXR SDKs", GUILayout.Height(24)))
             {
                 XRHeritageSDKManager.InstallVrOpenXrSdk();
             }
             EditorGUILayout.EndHorizontal();
+            EditorGUILayout.EndVertical();
 
-            EditorGUILayout.Space(10);
-            GUILayout.Box("", GUILayout.ExpandWidth(true), GUILayout.Height(1));
-            GUILayout.Label("Target Output: 'Assets/XRHeritageData/'", EditorStyles.miniLabel);
+            EditorGUILayout.Space(8);
+
+            // =====================================================================
+            // STEP 3: BUILD PLAYABLE SAMPLE SCENE & PREFABS
+            // =====================================================================
+            EditorGUILayout.BeginVertical("box");
+            GUILayout.Label("STEP 3: Build Playable Sample Scene & Prefabs", EditorStyles.boldLabel);
+            EditorGUILayout.LabelField("Automatically generates the XR/AR Camera Rig, 3D Artwork Stand with spatial Hotspot Markers, fully wired Multi-Perspective Museum UI Canvas, In-App TAM Survey Modal, and saves reusable Prefabs.", EditorStyles.wordWrappedMiniLabel);
+            EditorGUILayout.Space(4);
+
+            lastImportedData = (ArtworkExperienceData)EditorGUILayout.ObjectField("Experience Data Asset:", lastImportedData, typeof(ArtworkExperienceData), false);
+
+            EditorGUILayout.Space(6);
+
+            GUI.backgroundColor = new Color(0.88f, 0.72f, 0.38f);
+            if (GUILayout.Button("🎨 2. Build Complete Playable Scene & Prefabs", GUILayout.Height(40)))
+            {
+                SetupSceneHierarchy();
+            }
+            GUI.backgroundColor = Color.white;
+
+            EditorGUILayout.EndVertical();
+
+            EditorGUILayout.Space(8);
+            GUILayout.Label("Target Output: 'Assets/XRHeritageData/' & 'Assets/XRHeritageData/Prefabs/'", EditorStyles.miniLabel);
+
+            EditorGUILayout.EndScrollView();
         }
 
         private void CopyMasterPromptToClipboard()
@@ -130,7 +176,7 @@ namespace HeritageXR.Framework.Editor
             string prompt = MasterPromptText;
             EditorGUIUtility.systemCopyBuffer = prompt;
             EditorUtility.DisplayDialog("Prompt Copied!", 
-                "The XR Heritage Master AI Prompt has been copied to your clipboard!\n\nPaste it into ChatGPT, Claude, Perplexity, or any LLM assistant to start designing your exhibition.", 
+                "The XR Heritage Master AI Prompt has been copied to your clipboard!\n\nPaste it into ChatGPT, Claude, Perplexity, or Gemini to generate both:\n1. Your Visual & Curatorial Exhibition Report\n2. Your Unity .json Specification", 
                 "OK");
         }
 
@@ -139,7 +185,9 @@ namespace HeritageXR.Framework.Editor
 ### CORE PRINCIPLES
 1. Artwork Primacy & Artist Autonomy (Non-Negotiable): Technology must serve the artwork, never overshadow or compete with it. Distinctly protect the artist's voice. Differentiate meaningful mediation from digital gimmickry.
 2. Multi-Perspective Co-Design: Synthesize Curatorial Perspective, Artist Perspective, and Visitor Experience.
-3. Structured Output: Provide concise responses and output a valid HeritageExperienceSpec JSON for Unity.
+3. Dual-Deliverable Output: When the co-design is complete, ALWAYS provide BOTH:
+   - DELIVERABLE A: A comprehensive Exhibition Conception Report (suitable for saving/printing as PDF) answering all project parameters (Experience Type AR/VR/MR/XR, Author/Artist, Curator, Artwork Metadata, Spatial Ergonomics, Artist Autonomy Charter, Multi-Perspective Chapters, TAM Survey, and a Visual Spatial Maquette Diagram + AI Image Generation Prompt for a 3D gallery mockup).
+   - DELIVERABLE B: A valid HeritageExperienceSpec JSON code block ready for import into the Unity Package and the Visual Co-Creation Studio.
 
 ### INTAKE DIAGNOSTIC
 Before proposing solutions, confirm:
@@ -147,10 +195,7 @@ Before proposing solutions, confirm:
 2. Artwork Medium: 2D (Paint/Photo) | 3D (Sculpture/Relic) | Spatial/Installation | Intangible Heritage
 3. Exhibition Space & Conditions: Lighting, noise, crowd flow
 4. Primary Goal: Revealing drafts | Curatorial context | Material deconstruction | Accessibility
-5. Target Device: Tablet AR | Phone AR | Spatial MR | VR
-
-### OUTPUT FORMAT
-Provide the final experience specification as a valid JSON block containing: experienceId, metadata, exhibitionConstraints, chapters (with PhysicalArtwork, ArtistVoice, CuratorialLens perspectives and hotspots), and tamEvaluation.";
+5. Target Device: Tablet AR | Phone AR | Spatial MR | VR";
 
 
         private void ExecuteImport()
@@ -211,24 +256,23 @@ Provide the final experience specification as a valid JSON block containing: exp
                 AssetDatabase.SaveAssets();
                 AssetDatabase.Refresh();
 
+                lastImportedData = data;
                 Selection.activeObject = data;
-                EditorUtility.DisplayDialog("Success!", 
-                    $"Experience Data successfully created!\n\nTitle: {data.metadata.title}\nArtist: {data.metadata.artistName}\nChapters: {data.chapters.Count}\nSaved at: {assetPath}", 
-                    "OK");
 
-                // Auto-bind to ModernContentManager in the open scene if present
-                var mgr = UnityEngine.Object.FindAnyObjectByType<ModernContentManager>();
-                if (mgr != null)
+                bool buildNow = EditorUtility.DisplayDialog("Success! Experience Data Imported", 
+                    $"Experience Data successfully created!\n\n" +
+                    $"• Title: {data.metadata.title}\n" +
+                    $"• Artist: {data.metadata.artistName}\n" +
+                    $"• Modality: {data.exhibitionConstraints.deviceTarget}\n" +
+                    $"• Chapters: {data.chapters.Count}\n" +
+                    $"• Saved at: {assetPath}\n\n" +
+                    "Would you like to automatically build the complete playable XR Sample Scene & Prefabs now?", 
+                    "Yes, Build Scene & Prefabs!",
+                    "Later");
+
+                if (buildNow)
                 {
-                    Undo.RecordObject(mgr, "Assign Experience Data");
-                    SerializedObject serializedObj = new SerializedObject(mgr);
-                    SerializedProperty prop = serializedObj.FindProperty("experienceData");
-                    if (prop != null)
-                    {
-                        prop.objectReferenceValue = data;
-                        serializedObj.ApplyModifiedProperties();
-                        Debug.Log("[XR Heritage Framework] Auto-assigned data to ModernContentManager in open scene.");
-                    }
+                    XRHeritageSceneBuilder.BuildCompleteExperienceScene(data);
                 }
 
                 // Check target hardware and prompt to install required Unity SDKs
@@ -292,22 +336,16 @@ Provide the final experience specification as a valid JSON block containing: exp
 
         private void SetupSceneHierarchy()
         {
-            GameObject existing = GameObject.Find("XR_Heritage_Experience_Rig");
-            if (existing != null)
+            if (lastImportedData == null)
             {
-                EditorUtility.DisplayDialog("Notice", "XR_Heritage_Experience_Rig already exists in the scene.", "OK");
-                Selection.activeGameObject = existing;
-                return;
+                string[] guids = AssetDatabase.FindAssets("t:ArtworkExperienceData");
+                if (guids.Length > 0)
+                {
+                    lastImportedData = AssetDatabase.LoadAssetAtPath<ArtworkExperienceData>(AssetDatabase.GUIDToAssetPath(guids[0]));
+                }
             }
 
-            GameObject rig = new GameObject("XR_Heritage_Experience_Rig");
-            rig.AddComponent<ModernContentManager>();
-            rig.AddComponent<ArtworkLayerToggle>();
-            rig.AddComponent<InAppTamSurveyManager>();
-
-            Undo.RegisterCreatedObjectUndo(rig, "Create Heritage XR Rig");
-            Selection.activeGameObject = rig;
-            EditorUtility.DisplayDialog("Setup Complete", "Created 'XR_Heritage_Experience_Rig' with ModernContentManager, ArtworkLayerToggle, and InAppTamSurveyManager.", "OK");
+            XRHeritageSceneBuilder.BuildCompleteExperienceScene(lastImportedData);
         }
     }
 }
