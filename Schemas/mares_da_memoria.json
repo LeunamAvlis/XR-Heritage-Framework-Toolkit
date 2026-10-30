@@ -1,0 +1,118 @@
+{
+  "experienceId": "mares-da-memoria-ar",
+  "version": "2.2",
+  "metadata": {
+    "title": "Marés da Memória (Tides of Memory)",
+    "artistName": "Inês Valente",
+    "creationYear": "2019",
+    "medium": "Oil and charcoal on linen",
+    "physicalDimensions": "140 x 110 cm",
+    "museumOrCollection": "Contemporary Art Museum, Porto",
+    "curatorName": "Dr. Helena Marques"
+  },
+  "exhibitionLocation": "Gallery 3 - White cube, 150 lux conservation lighting",
+  "requireHeadphones": true,
+  "maxRecommendedSessionMinutes": 4.0,
+  "exhibitionConstraints": {
+    "location": "Gallery 3 - White cube, 150 lux conservation lighting",
+    "deviceTarget": "MuseumTabletAR",
+    "requireHeadphones": true,
+    "maxRecommendedSessionMinutes": 4.0,
+    "artistAutonomyBoundary": "AR off by default; overlays never cover more than 15% of the canvas; only the artist's own recorded voice; curatorial content always labelled; artist holds final veto."
+  },
+  "chapters": [
+    {
+      "chapterId": "chap_01",
+      "chapterTitle": "Standing Before the Tide",
+      "perspective": "PhysicalArtwork",
+      "narrativeText": "Take a moment with the painting itself. Notice the dark charcoal lines that break through the layers of blue and ochre oil paint: the drawing beneath the sea.",
+      "suggestedDwellTimeSeconds": 30.0,
+      "hotspots": [
+        {
+          "id": "spot_A_charcoal",
+          "title": "Charcoal Underlayer",
+          "description": "Macro photograph revealing the charcoal drawing beneath the oil surface.",
+          "perspective": "PhysicalArtwork",
+          "contentType": "Image",
+          "normalizedCoordinates": { "x": 0.30, "y": 0.65, "z": 0.0 }
+        }
+      ]
+    },
+    {
+      "chapterId": "chap_02",
+      "chapterTitle": "The First Gesture",
+      "perspective": "ArtistVoice",
+      "narrativeText": "\"It started with sketches on the beach at Espinho in 2017. I drew the same wave every morning for a month.\" - Inês Valente",
+      "audioClipPath": "Audio/valente_first_gesture.mp3",
+      "suggestedDwellTimeSeconds": 45.0,
+      "hotspots": [
+        {
+          "id": "spot_B_draft",
+          "title": "First Draft Study",
+          "description": "Slide to compare the 2017 beach sketch with the final painting.",
+          "perspective": "ArtistVoice",
+          "contentType": "InteractiveComparisonSlider",
+          "normalizedCoordinates": { "x": 0.50, "y": 0.25, "z": 0.0 }
+        }
+      ]
+    },
+    {
+      "chapterId": "chap_03",
+      "chapterTitle": "Erased Horizons",
+      "perspective": "ArtistVoice",
+      "narrativeText": "\"There was a horizon line. I painted over it because the sea in my memory had no end.\" - Inês Valente",
+      "audioClipPath": "Audio/valente_erased_horizon.mp3",
+      "suggestedDwellTimeSeconds": 35.0,
+      "hotspots": [
+        {
+          "id": "spot_B2_pentimento",
+          "title": "Hidden Horizon (Pentimento)",
+          "description": "Infrared capture revealing the painted-over horizon line.",
+          "perspective": "ArtistVoice",
+          "contentType": "Image",
+          "normalizedCoordinates": { "x": 0.55, "y": 0.55, "z": 0.0 }
+        }
+      ]
+    },
+    {
+      "chapterId": "chap_04",
+      "chapterTitle": "A Coast in Transition",
+      "perspective": "CuratorialLens",
+      "narrativeText": "Curatorial note: Valente's work belongs to a generation of Portuguese artists responding to coastal erosion. The 1970s coastline seen here no longer exists, so the painting becomes an archive of a vanishing landscape.",
+      "audioClipPath": "Audio/marques_coast_context.mp3",
+      "suggestedDwellTimeSeconds": 40.0,
+      "hotspots": [
+        {
+          "id": "spot_C_archive",
+          "title": "Archive Photograph, 1974",
+          "description": "Municipal archive image of the same stretch of coast.",
+          "perspective": "CuratorialLens",
+          "contentType": "AudioVoiceover",
+          "normalizedCoordinates": { "x": 0.72, "y": 0.40, "z": 0.0 }
+        }
+      ]
+    },
+    {
+      "chapterId": "chap_05",
+      "chapterTitle": "Return to the Painting",
+      "perspective": "PhysicalArtwork",
+      "narrativeText": "Lower the tablet. Look at the painting again with your own eyes: what do you see now that you did not see before?",
+      "suggestedDwellTimeSeconds": 20.0,
+      "hotspots": []
+    }
+  ],
+  "enablePostExperienceSurvey": true,
+  "customTamQuestions": [
+    "This experience deepened my understanding of the painting.",
+    "The tablet interface was easy and intuitive to use.",
+    "The digital layer respected the physical artwork and the artist's voice."
+  ],
+  "tamEvaluation": {
+    "enabled": true,
+    "quickSurveyQuestions": [
+      "This experience deepened my understanding of the painting.",
+      "The tablet interface was easy and intuitive to use.",
+      "The digital layer respected the physical artwork and the artist's voice."
+    ]
+  }
+}
