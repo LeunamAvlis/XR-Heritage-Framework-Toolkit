@@ -434,15 +434,244 @@
         border-bottom-color: #cbd5e1 !important;
       }
     }
+  
+    /* Welcome Modal & Backdrop */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(10, 12, 16, 0.82);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+    .modal-backdrop.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .welcome-modal {
+      background: #141720;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      max-width: 820px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.75), 0 0 0 1px rgba(212, 163, 89, 0.3);
+      display: flex;
+      flex-direction: column;
+    }
+    .modal-header {
+      padding: 18px 24px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #191d27;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    .modal-body {
+      padding: 24px;
+      font-size: 0.92rem;
+      line-height: 1.6;
+    }
+    .modal-tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 12px;
+    }
+    .modal-tab-btn {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 0.85rem;
+      font-weight: 600;
+      padding: 8px 14px;
+      cursor: pointer;
+      border-radius: 8px;
+      transition: all 0.2s;
+    }
+    .modal-tab-btn:hover {
+      color: var(--text);
+      border-color: var(--accent);
+    }
+    .modal-tab-btn.active {
+      background: rgba(212, 163, 89, 0.15);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+    .step-card {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px 16px;
+      margin-bottom: 12px;
+    }
+    .step-card h4 {
+      color: var(--accent);
+      font-size: 0.95rem;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .prompt-snippet-box {
+      background: #0d0f14;
+      border: 1px solid #2d3340;
+      border-radius: 6px;
+      padding: 10px;
+      font-family: monospace;
+      font-size: 0.78rem;
+      color: #cbd5e1;
+      max-height: 140px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      margin: 8px 0;
+      user-select: all;
+    }
+    .lang-switcher {
+      display: inline-flex;
+      background: #11141a;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 2px;
+      gap: 2px;
+    }
+    .lang-btn {
+      background: transparent;
+      border: none;
+      color: var(--muted);
+      padding: 4px 12px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      border-radius: 16px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .lang-btn.active {
+      background: var(--accent);
+      color: #000;
+    }
+    @media print {
+      .modal-backdrop, .lang-switcher, #btn_help_open { display: none !important; }
+    }
+
   </style>
 </head>
 <body>
+
+  
+  <!-- Welcome & Research Modal -->
+  <div class="modal-backdrop active" id="welcomeModalBackdrop">
+    <div class="welcome-modal">
+      <div class="modal-header">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <span class="brand-badge" style="font-size:0.75rem;">RESEARCH UCP PORTO</span>
+          <h3 style="font-size:1.1rem; margin:0;" id="modal_title">🏛️ Welcome to XR Heritage Framework</h3>
+        </div>
+        <div style="display:flex; align-items:center; gap:10px;">
+          <div class="lang-switcher">
+            <button class="lang-btn active" id="modal_lang_en" onclick="setLanguage('en')">EN</button>
+            <button class="lang-btn" id="modal_lang_pt" onclick="setLanguage('pt')">PT</button>
+          </div>
+          <button onclick="closeWelcomeModal()" style="background:transparent; border:none; color:var(--muted); font-size:1.4rem; cursor:pointer; line-height:1;">✕</button>
+        </div>
+      </div>
+      <div class="modal-body">
+        <p id="modal_intro" style="color:#cbd5e1; margin-bottom:16px;">
+          This visual studio is part of a doctoral research project at the <strong>School of Arts, Universidade Católica Portuguesa (UCP Porto)</strong> by <em>Manuel Silva</em> (supervised by <em>Prof. Luís Teixeira</em>). It provides a validated bridge between <strong>AI-assisted creative mediation</strong>, <strong>curatorial autonomy</strong>, and <strong>XR game-engine implementation</strong>.
+        </p>
+
+        <div class="modal-tabs">
+          <button class="modal-tab-btn active" id="tab_btn_track1" onclick="switchModalTab('track1')">🎨 For Artists & Curators (No-Code)</button>
+          <button class="modal-tab-btn" id="tab_btn_track2" onclick="switchModalTab('track2')">💻 For Developers & Tech-Savvy</button>
+          <button class="modal-tab-btn" id="tab_btn_research" onclick="switchModalTab('research')">🔬 Research & TAM Foundation</button>
+        </div>
+
+        <!-- TAB 1: ARTISTS & CURATORS -->
+        <div id="modal_tab_track1">
+          <div class="step-card">
+            <h4><span style="background:var(--accent); color:#000; border-radius:50%; width:20px; height:20px; display:inline-flex; align-items:center; justify-content:center; font-size:0.75rem;">1</span> <span id="m_step1_title">Co-Design with the AI Assistant</span></h4>
+            <p id="m_step1_desc" style="font-size:0.86rem; color:#9ba3b0;">Copy our Master AI Prompt and paste it into ChatGPT, Claude, Gemini, or Perplexity. The AI will first ask for your role (Artist or Curator) to adapt its language, protect your creative voice, and produce your experience design.</p>
+            <div style="display:flex; gap:8px; margin-top:8px;">
+              <button class="btn btn-blue" style="font-size:0.8rem; padding:6px 12px;" onclick="copyMasterPromptFromModal()">📋 <span id="m_btn_copy">Copy Master AI Prompt</span></button>
+              <a href="https://github.com/LeunamAvlis/XR-Heritage-Framework-Toolkit/blob/main/ALL_IN_ONE_PROMPT.txt" target="_blank" class="btn" style="font-size:0.8rem; padding:6px 12px; text-decoration:none;">📄 View on GitHub</a>
+            </div>
+          </div>
+
+          <div class="step-card">
+            <h4><span style="background:var(--accent); color:#000; border-radius:50%; width:20px; height:20px; display:inline-flex; align-items:center; justify-content:center; font-size:0.75rem;">2</span> <span id="m_step2_title">Visualize & Generate PDF Dossier</span></h4>
+            <p id="m_step2_desc" style="font-size:0.86rem; color:#9ba3b0;">Paste the AI's JSON output directly into this Studio. Preview the 3D gallery floorplan maquette and interactive viewport, attach your visual renders, and click <strong>Save Visual Report (PDF)</strong> for your exhibition team.</p>
+          </div>
+
+          <div class="step-card">
+            <h4><span style="background:var(--accent); color:#000; border-radius:50%; width:20px; height:20px; display:inline-flex; align-items:center; justify-content:center; font-size:0.75rem;">3</span> <span id="m_step3_title">Developer Handoff or Gentle Engine On-Ramp</span></h4>
+            <p id="m_step3_desc" style="font-size:0.86rem; color:#9ba3b0;">Click <strong>Export Unity .JSON</strong> to send to your developer. Or if you want to try testing it yourself in Unity, our guide will walk you through a gentle 3-step no-code walkthrough.</p>
+          </div>
+        </div>
+
+        <!-- TAB 2: DEVELOPERS & TECH-SAVVY -->
+        <div id="modal_tab_track2" style="display:none;">
+          <div class="step-card">
+            <h4>📦 <span id="m_dev_pkg_title">Install Unity Package (UPM)</span></h4>
+            <p id="m_dev_pkg_desc" style="font-size:0.86rem; color:#9ba3b0;">Add the package via Git URL in Unity Package Manager (Unity 2021.3 LTS+):</p>
+            <div class="prompt-snippet-box">https://github.com/LeunamAvlis/XR-Heritage-Framework-Toolkit.git?path=/Unity_Package</div>
+          </div>
+          <div class="step-card">
+            <h4>🤖 <span id="m_dev_skills_title">Modular AI Skills & Antigravity</span></h4>
+            <p id="m_dev_skills_desc" style="font-size:0.86rem; color:#9ba3b0;">For CLI / Antigravity / Agentic developers, all 4 modular AI skills are located in <code>AI_Skills/</code>. You can run individual agents for profiling, affordance matchmaking, and TAM generation.</p>
+          </div>
+          <div class="step-card">
+            <h4>🎨 <span id="m_dev_wizard_title">1-Click Experience Setup Wizard</span></h4>
+            <p id="m_dev_wizard_desc" style="font-size:0.86rem; color:#9ba3b0;">Open <code>Tools > XR Heritage Framework > Experience Setup Wizard</code> in Unity. Importing the artist's JSON automatically installs AR/VR SDKs, builds the XR Rig, instantiates 3D Hotspot pins, and wires the UI canvas.</p>
+          </div>
+        </div>
+
+        <!-- TAB 3: RESEARCH & TAM FOUNDATION -->
+        <div id="modal_tab_research" style="display:none;">
+          <div class="step-card">
+            <h4>🔬 <span id="m_res_title">Doctoral Research Context</span></h4>
+            <p id="m_res_desc" style="font-size:0.86rem; color:#9ba3b0;">Developed at School of Arts, Portuguese Catholic University (UCP Porto). Built on an empirical benchmark of 60+ European museum XR projects (2005–2024) and evaluated by panels of curators, artists, and creative technologists.</p>
+          </div>
+          <div class="step-card">
+            <h4>📊 <span id="m_tam_title">Technology Acceptance Model (TAM) Integration</span></h4>
+            <p id="m_tam_desc" style="font-size:0.86rem; color:#9ba3b0;">The framework automatically embeds validated in-situ micro-surveys measuring Perceived Usefulness (PU), Ease of Use (PEOU), Curatorial Respect (CR), and Artist Autonomy Preservation (AAP), logging anonymous visitor data to CSV.</p>
+          </div>
+        </div>
+      </div>
+      <div style="padding:14px 24px; border-top:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; background:#191d27; border-radius:0 0 14px 14px;">
+        <label style="display:flex; align-items:center; gap:8px; font-size:0.8rem; color:var(--muted); cursor:pointer;">
+          <input type="checkbox" id="chk_hide_welcome" /> <span id="lbl_dont_show">Don't show this welcome window automatically next time</span>
+        </label>
+        <button class="btn btn-primary" onclick="closeWelcomeModal()" style="padding:8px 20px;"><span id="btn_enter_studio">Start Using Studio 🚀</span></button>
+      </div>
+    </div>
+  </div>
 
   <header class="app-header">
     <div class="brand">
       <span class="brand-badge">XR HERITAGE v2.2</span>
       <h1>Visual Co-Creation Studio & Exhibition Dossier Generator</h1>
     </div>
+    
+      <div style="display:flex; align-items:center; gap:12px;">
+        <div class="lang-switcher">
+          <button class="lang-btn active" id="lang_en" onclick="setLanguage('en')">EN</button>
+          <button class="lang-btn" id="lang_pt" onclick="setLanguage('pt')">PT</button>
+        </div>
+        <button class="btn" id="btn_help_open" onclick="openWelcomeModal()" style="font-size:0.8rem; padding:6px 14px;">ℹ️ <span id="lbl_help_btn">Guide & Research</span></button>
+      </div>
+
     <div class="header-actions">
       <button class="btn" onclick="loadSample('photo')">📸 Load Photography Sample</button>
       <button class="btn" onclick="loadSample('sculpture')">🗿 Load 3D Sculpture Sample</button>
@@ -1225,6 +1454,176 @@
     // Initialize on load
     populateFormFromSpec();
     renderDossier();
+  
+    // ==========================================
+    // BILINGUAL (EN / PT) & WELCOME MODAL LOGIC
+    // ==========================================
+    const I18N = {
+      en: {
+        help_btn: "Guide & Research",
+        sample_photo: "📸 Load Photography Sample",
+        sample_sculpture: "🗿 Load 3D Sculpture Sample",
+        export_json: "📦 Export Unity .JSON",
+        save_pdf: "📄 Save Visual Report (PDF)",
+        json_load_title: "📂 Load AI-Generated JSON File:",
+        json_paste_title: "📋 …or paste the JSON block from the AI chat:",
+        json_paste_btn: "✅ Load Pasted JSON",
+        renders_title: "🖼️ Add Renders / Reference Images (optional):",
+        renders_hint: "AI-generated maquettes, photos of the artwork or the gallery. They appear in the report and the PDF.",
+        sec1: "1. Artwork & Museum Identity",
+        sec2: "2. XR Modality & Spatial Setup",
+        sec3: "3. Multi-Perspective Chapters",
+        sec4: "4. Technology Acceptance Model (TAM)",
+        out_autonomy_title: "Artist Autonomy & Non-Interference Charter:",
+        out_maquette_title: "📐 Spatial Installation Maquette & Interactive UI Prototype",
+        out_renders_title: "🖼️ Visual Renders & Reference Images",
+        out_chapters_title: "📚 Multi-Perspective Narrative & Hotspot Specification",
+        out_tam_title: "📊 Technology Acceptance Model (TAM) Evaluation Protocol",
+        modal_title: "🏛️ Welcome to XR Heritage Framework",
+        modal_intro: "This visual studio is part of a doctoral research project at the <strong>School of Arts, Universidade Católica Portuguesa (UCP Porto)</strong> by <em>Manuel Silva</em> (supervised by <em>Prof. Luís Teixeira</em>). It provides a validated bridge between <strong>AI-assisted creative mediation</strong>, <strong>curatorial autonomy</strong>, and <strong>XR game-engine implementation</strong>.",
+        tab_track1: "🎨 For Artists & Curators (No-Code)",
+        tab_track2: "💻 For Developers & Tech-Savvy",
+        tab_research: "🔬 Research & TAM Foundation",
+        step1_title: "Co-Design with the AI Assistant",
+        step1_desc: "Copy our Master AI Prompt and paste it into ChatGPT, Claude, Gemini, or Perplexity. The AI will first ask for your role (Artist or Curator) to adapt its language, protect your creative voice, and produce your experience design.",
+        btn_copy_prompt: "Copy Master AI Prompt",
+        step2_title: "Visualize & Generate PDF Dossier",
+        step2_desc: "Paste the AI's JSON output directly into this Studio. Preview the 3D gallery floorplan maquette and interactive viewport, attach your visual renders, and click Save Visual Report (PDF) for your exhibition team.",
+        step3_title: "Developer Handoff or Gentle Engine On-Ramp",
+        step3_desc: "Click Export Unity .JSON to send to your developer. Or if you want to try testing it yourself in Unity, our guide will walk you through a gentle 3-step no-code walkthrough.",
+        dev_pkg_title: "Install Unity Package (UPM)",
+        dev_pkg_desc: "Add the package via Git URL in Unity Package Manager (Unity 2021.3 LTS+):",
+        dev_skills_title: "Modular AI Skills & Antigravity",
+        dev_skills_desc: "For CLI / Antigravity / Agentic developers, all 4 modular AI skills are located in AI_Skills/. You can run individual agents for profiling, affordance matchmaking, and TAM generation.",
+        dev_wizard_title: "1-Click Experience Setup Wizard",
+        dev_wizard_desc: "Open Tools > XR Heritage Framework > Experience Setup Wizard in Unity. Importing the artist's JSON automatically installs AR/VR SDKs, builds the XR Rig, instantiates 3D Hotspot pins, and wires the UI canvas.",
+        res_title: "Doctoral Research Context",
+        res_desc: "Developed at School of Arts, Portuguese Catholic University (UCP Porto). Built on an empirical benchmark of 60+ European museum XR projects (2005–2024) and evaluated by panels of curators, artists, and creative technologists.",
+        tam_title: "Technology Acceptance Model (TAM) Integration",
+        tam_desc: "The framework automatically embeds validated in-situ micro-surveys measuring Perceived Usefulness (PU), Ease of Use (PEOU), Curatorial Respect (CR), and Artist Autonomy Preservation (AAP), logging anonymous visitor data to CSV.",
+        dont_show: "Don't show this welcome window automatically next time",
+        btn_enter: "Start Using Studio 🚀"
+      },
+      pt: {
+        help_btn: "Guia & Investigação",
+        sample_photo: "📸 Carregar Exemplo Fotografia",
+        sample_sculpture: "🗿 Carregar Exemplo Escultura 3D",
+        export_json: "📦 Exportar .JSON Unity",
+        save_pdf: "📄 Guardar Relatório Visual (PDF)",
+        json_load_title: "📂 Carregar Ficheiro JSON da IA:",
+        json_paste_title: "📋 …ou cole o bloco JSON do chat com a IA:",
+        json_paste_btn: "✅ Carregar JSON Colado",
+        renders_title: "🖼️ Adicionar Renders / Imagens de Referência (opcional):",
+        renders_hint: "Maquetas geradas por IA, fotos da obra ou do espaço da galeria. Serão incluídas no relatório e no PDF.",
+        sec1: "1. Identidade da Obra & Museu",
+        sec2: "2. Modalidade XR & Configuração Espacial",
+        sec3: "3. Capítulos Multi-Perspetiva",
+        sec4: "4. Modelo de Aceitação Tecnológica (TAM)",
+        out_autonomy_title: "Carta de Autonomia do Artista & Não-Interferência:",
+        out_maquette_title: "📐 Maqueta Espacial da Instalação & Protótipo Interativo",
+        out_renders_title: "🖼️ Renders Visuais & Imagens de Referência",
+        out_chapters_title: "📚 Narrativa Multi-Perspetiva & Especificação de Hotspots",
+        out_tam_title: "📊 Protocolo de Avaliação (TAM)",
+        modal_title: "🏛️ Bem-vindo ao XR Heritage Framework",
+        modal_intro: "Este estúdio visual é parte de um projeto de investigação doutoral na <strong>Escola das Artes da Universidade Católica Portuguesa (UCP Porto)</strong> por <em>Manuel Silva</em> (sob orientação do <em>Prof. Doutor Luís Teixeira</em>). Estabelece uma ponte validada entre <strong>mediação criativa assistida por IA</strong>, <strong>autonomia curatorial</strong> e <strong>implementação em motores de jogo XR</strong>.",
+        tab_track1: "🎨 Para Artistas & Curadores (Sem Código)",
+        tab_track2: "💻 Para Programadores & Perfil Técnico",
+        tab_research: "🔬 Investigação & Modelo TAM",
+        step1_title: "Co-Criação com o Assistente IA",
+        step1_desc: "Copie o nosso Master AI Prompt e cole-o no ChatGPT, Claude, Gemini ou Perplexity. A IA perguntará primeiro pelo seu papel (Artista ou Curador) para adaptar a linguagem, proteger a sua voz criativa e desenhar a experiência.",
+        btn_copy_prompt: "Copiar Master Prompt da IA",
+        step2_title: "Visualizar & Gerar Dossier em PDF",
+        step2_desc: "Cole o JSON gerado pela IA diretamente neste Estúdio. Pré-visualize a maqueta espacial da galeria e a janela de visualização interativa, anexe os renders visuais e clique em Guardar Relatório Visual (PDF).",
+        step3_title: "Transição para Desenvolvedores ou Guia Unity",
+        step3_desc: "Clique em Exportar .JSON Unity para enviar à equipa técnica. Ou se quiser testar você mesmo no Unity, o nosso guia oferece um passo a passo suave e sem programação.",
+        dev_pkg_title: "Instalar Pacote Unity (UPM)",
+        dev_pkg_desc: "Adicione o pacote via URL Git no Gestor de Pacotes do Unity (Unity 2021.3 LTS+):",
+        dev_skills_title: "Skills Modulares de IA & Antigravity",
+        dev_skills_desc: "Para programadores CLI / Antigravity / Sistemas Agênticos, todas as 4 skills modulares estão em AI_Skills/. Pode executar agentes individuais para diagnóstico, mapeamento de affordances e avaliação TAM.",
+        dev_wizard_title: "Assistente de Configuração em 1 Clique",
+        dev_wizard_desc: "Abra Tools > XR Heritage Framework > Experience Setup Wizard no Unity. Importar o JSON instala automaticamente os SDKs AR/VR, constrói a cena, cria os pins 3D e liga a interface de utilizador.",
+        res_title: "Contexto de Investigação Doutoral",
+        res_desc: "Desenvolvido na Escola das Artes da Universidade Católica Portuguesa (UCP Porto). Baseado num benchmark empírico de mais de 60 projetos europeus de XR em museus (2005–2024) e avaliado por curadores, artistas e tecnólogos.",
+        tam_title: "Integração do Modelo de Aceitação Tecnológica (TAM)",
+        tam_desc: "O framework integra questionários in-situ que medem Utilidade Percebida (PU), Facilidade de Uso (PEOU), Respeito Curatorial (CR) e Preservação da Autonomia do Artista (AAP), registando dados anónimos em CSV.",
+        dont_show: "Não mostrar esta janela de boas-vindas automaticamente da próxima vez",
+        btn_enter: "Entrar no Estúdio 🚀"
+      }
+    };
+
+    let currentLang = localStorage.getItem('xr_heritage_lang') || 'en';
+
+    function setLanguage(lang) {
+      currentLang = lang;
+      localStorage.setItem('xr_heritage_lang', lang);
+      document.querySelectorAll('#lang_en, #modal_lang_en').forEach(b => b.classList.toggle('active', lang === 'en'));
+      document.querySelectorAll('#lang_pt, #modal_lang_pt').forEach(b => b.classList.toggle('active', lang === 'pt'));
+
+      const t = I18N[lang];
+      document.getElementById('lbl_help_btn').textContent = t.help_btn;
+      document.getElementById('modal_title').innerHTML = t.modal_title;
+      document.getElementById('modal_intro').innerHTML = t.modal_intro;
+      document.getElementById('tab_btn_track1').textContent = t.tab_track1;
+      document.getElementById('tab_btn_track2').textContent = t.tab_track2;
+      document.getElementById('tab_btn_research').textContent = t.tab_research;
+      document.getElementById('m_step1_title').textContent = t.step1_title;
+      document.getElementById('m_step1_desc').textContent = t.step1_desc;
+      document.getElementById('m_btn_copy').textContent = t.btn_copy_prompt;
+      document.getElementById('m_step2_title').textContent = t.step2_title;
+      document.getElementById('m_step2_desc').textContent = t.step2_desc;
+      document.getElementById('m_step3_title').textContent = t.step3_title;
+      document.getElementById('m_step3_desc').textContent = t.step3_desc;
+      document.getElementById('m_dev_pkg_title').textContent = t.dev_pkg_title;
+      document.getElementById('m_dev_pkg_desc').textContent = t.dev_pkg_desc;
+      document.getElementById('m_dev_skills_title').textContent = t.dev_skills_title;
+      document.getElementById('m_dev_skills_desc').textContent = t.dev_skills_desc;
+      document.getElementById('m_dev_wizard_title').textContent = t.dev_wizard_title;
+      document.getElementById('m_dev_wizard_desc').textContent = t.dev_wizard_desc;
+      document.getElementById('m_res_title').textContent = t.res_title;
+      document.getElementById('m_res_desc').textContent = t.res_desc;
+      document.getElementById('m_tam_title').textContent = t.tam_title;
+      document.getElementById('m_tam_desc').textContent = t.tam_desc;
+      document.getElementById('lbl_dont_show').textContent = t.dont_show;
+      document.getElementById('btn_enter_studio').textContent = t.btn_enter;
+    }
+
+    function openWelcomeModal() {
+      document.getElementById('welcomeModalBackdrop').classList.add('active');
+    }
+
+    function closeWelcomeModal() {
+      if (document.getElementById('chk_hide_welcome').checked) {
+        localStorage.setItem('xr_heritage_hide_welcome', 'true');
+      }
+      document.getElementById('welcomeModalBackdrop').classList.remove('active');
+    }
+
+    function switchModalTab(tabKey) {
+      document.querySelectorAll('.modal-tab-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById('tab_btn_' + tabKey).classList.add('active');
+      document.getElementById('modal_tab_track1').style.display = (tabKey === 'track1') ? 'block' : 'none';
+      document.getElementById('modal_tab_track2').style.display = (tabKey === 'track2') ? 'block' : 'none';
+      document.getElementById('modal_tab_research').style.display = (tabKey === 'research') ? 'block' : 'none';
+    }
+
+    function copyMasterPromptFromModal() {
+      fetch('https://raw.githubusercontent.com/LeunamAvlis/XR-Heritage-Framework-Toolkit/main/ALL_IN_ONE_PROMPT.txt')
+        .then(r => r.text())
+        .then(text => {
+          navigator.clipboard.writeText(text);
+          alert(currentLang === 'pt' ? 'Master AI Prompt copiado para a área de transferência!' : 'Master AI Prompt copied to clipboard!');
+        })
+        .catch(() => {
+          window.open('https://github.com/LeunamAvlis/XR-Heritage-Framework-Toolkit/blob/main/ALL_IN_ONE_PROMPT.txt', '_blank');
+        });
+    }
+
+    // Check if user already opted to hide the welcome modal
+    if (localStorage.getItem('xr_heritage_hide_welcome') === 'true') {
+      document.getElementById('welcomeModalBackdrop').classList.remove('active');
+    }
+    setLanguage(currentLang);
+
   </script>
 </body>
 </html>
