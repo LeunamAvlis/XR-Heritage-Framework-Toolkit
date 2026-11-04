@@ -1,0 +1,104 @@
+{
+  "experienceId": "memorias-escondidas-2026",
+  "version": "2.2",
+  "metadata": {
+    "title": "Memórias Escondidas",
+    "artistName": "Artista Convidado",
+    "creationYear": "2026",
+    "medium": "Instalação Visual",
+    "physicalDimensions": "100 cm x 100 cm",
+    "museumOrCollection": "Galeria de Arte Contemporânea",
+    "curatorName": "Equipa Curatorial UCP"
+  },
+  "exhibitionLocation": "Sala Principal - Galeria de Arte",
+  "requireHeadphones": true,
+  "maxRecommendedSessionMinutes": 3.5,
+  "exhibitionConstraints": {
+    "location": "Sala Principal - Galeria de Arte",
+    "deviceTarget": "MuseumTabletAR",
+    "requireHeadphones": true,
+    "maxRecommendedSessionMinutes": 3.5,
+    "artistAutonomyBoundary": "A camada digital não sobrepõe efeitos visuais invasivos sobre a obra; conteúdos extras aparecem em camadas colapsáveis e em planos semitransparentes respeitando a matéria física."
+  },
+  "chapters": [
+    {
+      "chapterId": "chap_01",
+      "chapterTitle": "O Silêncio da Presença",
+      "perspective": "PhysicalArtwork",
+      "narrativeText": "Contemplação direta da instalação visual 'Memórias Escondidas'. Observe a textura física, a incidência da luz ambiente e os volumes antes de acionar a mediação digital.",
+      "suggestedDwellTimeSeconds": 30,
+      "hotspots": [
+        {
+          "id": "spot_01",
+          "title": "Matéria e Textura Revelada",
+          "description": "Ponto focal da composição estrutural e pigmentação da obra física.",
+          "perspective": "PhysicalArtwork",
+          "contentType": "Image",
+          "normalizedCoordinates": {
+            "x": 0.5,
+            "y": 0.5,
+            "z": 0
+          }
+        }
+      ]
+    },
+    {
+      "chapterId": "chap_02",
+      "chapterTitle": "O Atelier Invisível (Voz do Artista)",
+      "perspective": "ArtistVoice",
+      "narrativeText": "O artista partilha os fragmentos descartados, esboços preparatórios e anotações pessoais que antecederam a forma final da instalação.",
+      "audioClipPath": "Audio/memorias_escondidas_artista.mp3",
+      "suggestedDwellTimeSeconds": 80,
+      "hotspots": [
+        {
+          "id": "spot_02",
+          "title": "Estudos & Esboços Iniciais",
+          "description": "Slider de comparação entre as plantas preliminares de 2026 e a execução final.",
+          "perspective": "ArtistVoice",
+          "contentType": "InteractiveComparisonSlider",
+          "normalizedCoordinates": {
+            "x": 0.28,
+            "y": 0.72,
+            "z": 0
+          }
+        }
+      ]
+    },
+    {
+      "chapterId": "chap_03",
+      "chapterTitle": "A Memória Coletiva (Lente Curatorial)",
+      "perspective": "CuratorialLens",
+      "narrativeText": "Análise teórica da instalação no contexto da preservação da memória e do arquivo efémero na arte contemporânea.",
+      "audioClipPath": "Audio/memorias_escondidas_curador.mp3",
+      "suggestedDwellTimeSeconds": 60,
+      "hotspots": [
+        {
+          "id": "spot_03",
+          "title": "Ressonâncias Curadoriais",
+          "description": "Cruzamento histórico e diálogos conceituais com obras afins.",
+          "perspective": "CuratorialLens",
+          "contentType": "AudioVoiceover",
+          "normalizedCoordinates": {
+            "x": 0.75,
+            "y": 0.3,
+            "z": 0
+          }
+        }
+      ]
+    }
+  ],
+  "enablePostExperienceSurvey": true,
+  "customTamQuestions": [
+    "Esta experiência aprofundou a sua compreensão da obra 'Memórias Escondidas'?",
+    "A interface do tablet foi intuitiva e fácil de manipular?",
+    "A camada digital respeitou a autenticidade e a presença da obra física?"
+  ],
+  "tamEvaluation": {
+    "enabled": true,
+    "quickSurveyQuestions": [
+      "Esta experiência aprofundou a sua compreensão da obra 'Memórias Escondidas'?",
+      "A interface do tablet foi intuitiva e fácil de manipular?",
+      "A camada digital respeitou a autenticidade e a presença da obra física?"
+    ]
+  }
+}
