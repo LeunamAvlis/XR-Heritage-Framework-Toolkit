@@ -661,22 +661,19 @@
   <header class="app-header">
     <div class="brand">
       <span class="brand-badge">XR HERITAGE v2.2</span>
-      <h1>Visual Co-Creation Studio & Exhibition Dossier Generator</h1>
+      <h1 id="app_header_title">Visual Co-Creation Studio & Exhibition Dossier Generator</h1>
     </div>
     
-      <div style="display:flex; align-items:center; gap:12px;">
-        <div class="lang-switcher">
-          <button class="lang-btn active" id="lang_en" onclick="setLanguage('en')">EN</button>
-          <button class="lang-btn" id="lang_pt" onclick="setLanguage('pt')">PT</button>
-        </div>
-        <button class="btn" id="btn_help_open" onclick="openWelcomeModal()" style="font-size:0.8rem; padding:6px 14px;">ℹ️ <span id="lbl_help_btn">Guide & Research</span></button>
+      <div class="header-actions">
+      <div class="lang-switcher">
+        <button class="lang-btn active" id="lang_en" onclick="setLanguage('en')">EN</button>
+        <button class="lang-btn" id="lang_pt" onclick="setLanguage('pt')">PT</button>
       </div>
-
-    <div class="header-actions">
-      <button class="btn" onclick="loadSample('photo')">📸 Load Photography Sample</button>
-      <button class="btn" onclick="loadSample('sculpture')">🗿 Load 3D Sculpture Sample</button>
-      <button class="btn btn-blue" onclick="downloadJson()">📦 Export Unity .JSON</button>
-      <button class="btn btn-primary" onclick="window.print()">📄 Save Visual Report (PDF)</button>
+      <button class="btn" id="btn_help_open" onclick="openWelcomeModal()">ℹ️ <span id="lbl_help_btn">Guide & Research</span></button>
+      <button class="btn" id="btn_load_photo" onclick="loadSample('photo')">📸 <span id="lbl_load_photo">Load Photography Sample</span></button>
+      <button class="btn" id="btn_load_sculpture" onclick="loadSample('sculpture')">🗿 <span id="lbl_load_sculpture">Load 3D Sculpture Sample</span></button>
+      <button class="btn btn-blue" id="btn_export_json" onclick="downloadJson()">📦 <span id="lbl_export_json">Export Unity .JSON</span></button>
+      <button class="btn btn-primary" id="btn_save_pdf" onclick="window.print()">📄 <span id="lbl_save_pdf">Save Visual Report (PDF)</span></button>
     </div>
   </header>
 
@@ -701,44 +698,44 @@
         <div style="font-size:0.7rem; color:#888; margin-top:4px;">AI-generated maquettes, photos of the artwork or the gallery. They appear in the report and the PDF.</div>
       </div>
 
-      <h2>1. Artwork & Museum Identity</h2>
+      <h2 id="sec_hdr_1">1. Artwork & Museum Identity</h2>
       <div class="form-group">
-        <label>Artwork Title</label>
+        <label id="lbl_f_title">Artwork Title</label>
         <input type="text" id="inp_title" oninput="syncFromForm()" />
       </div>
       <div class="form-row">
         <div class="form-group">
-          <label>Artist Name</label>
+          <label id="lbl_f_artist">Artist Name</label>
           <input type="text" id="inp_artist" oninput="syncFromForm()" />
         </div>
         <div class="form-group">
-          <label>Creation Year</label>
+          <label id="lbl_f_year">Creation Year</label>
           <input type="text" id="inp_year" oninput="syncFromForm()" />
         </div>
       </div>
       <div class="form-group">
-        <label>Medium & Materiality</label>
+        <label id="lbl_f_medium">Medium & Materiality</label>
         <input type="text" id="inp_medium" oninput="syncFromForm()" />
       </div>
       <div class="form-row">
         <div class="form-group">
-          <label>Dimensions</label>
+          <label id="lbl_f_dim">Dimensions</label>
           <input type="text" id="inp_dimensions" oninput="syncFromForm()" />
         </div>
         <div class="form-group">
-          <label>Curator Name</label>
+          <label id="lbl_f_curator">Curator Name</label>
           <input type="text" id="inp_curator" oninput="syncFromForm()" />
         </div>
       </div>
       <div class="form-group">
-        <label>Museum / Institution</label>
+        <label id="lbl_f_museum">Museum / Institution</label>
         <input type="text" id="inp_museum" oninput="syncFromForm()" />
       </div>
 
-      <h2>2. XR Modality & Spatial Setup</h2>
+      <h2 id="sec_hdr_2">2. XR Modality & Spatial Setup</h2>
       <div class="form-row">
         <div class="form-group">
-          <label>Target XR Hardware</label>
+          <label id="lbl_f_device">Target XR Hardware</label>
           <select id="inp_device" onchange="syncFromForm()">
             <option value="MuseumTabletAR">Museum Tablet AR (Handheld)</option>
             <option value="MobileHandheldAR">Visitor Smartphone AR (BYOD)</option>
@@ -747,20 +744,20 @@
           </select>
         </div>
         <div class="form-group">
-          <label>Session Limit (min)</label>
+          <label id="lbl_f_duration">Session Limit (min)</label>
           <input type="number" step="0.5" id="inp_duration" oninput="syncFromForm()" />
         </div>
       </div>
       <div class="form-group">
-        <label>Gallery / Room Location</label>
+        <label id="lbl_f_location">Gallery / Room Location</label>
         <input type="text" id="inp_location" oninput="syncFromForm()" />
       </div>
       <div class="form-group">
-        <label>Artist Autonomy & Non-Intrusive Charter</label>
+        <label id="lbl_f_autonomy">Artist Autonomy & Non-Intrusive Charter</label>
         <textarea id="inp_autonomy" oninput="syncFromForm()"></textarea>
       </div>
 
-      <h2>3. Multi-Perspective Chapters</h2>
+      <h2 id="sec_hdr_3">3. Multi-Perspective Chapters</h2>
       <div id="chaptersEditorContainer"></div>
     </aside>
 
@@ -769,7 +766,7 @@
       <div class="dossier-sheet" id="printableDossier">
         <div class="dossier-header">
           <div>
-            <div class="dossier-tag">XR Cultural Heritage Conception & Co-Design Dossier</div>
+            <div class="dossier-tag" id="lbl_dossier_tag">XR Cultural Heritage Conception & Co-Design Dossier</div>
             <h2 class="dossier-title" id="out_title">Stillness and Resonance</h2>
             <div class="dossier-subtitle" id="out_subtitle">By Carlos Lobo (2024) — Serralves Museum of Contemporary Art</div>
           </div>
@@ -782,19 +779,19 @@
         <!-- Key Characteristics Grid -->
         <div class="info-grid">
           <div class="info-card">
-            <div class="label">Medium & Material</div>
+            <div class="label" id="lbl_c_medium">Medium & Material</div>
             <div class="value" id="out_medium">Analog photography</div>
           </div>
           <div class="info-card">
-            <div class="label">Physical Dimensions</div>
+            <div class="label" id="lbl_c_dim">Physical Dimensions</div>
             <div class="value" id="out_dimensions">110 x 140 cm</div>
           </div>
           <div class="info-card">
-            <div class="label">Curatorial Lead</div>
+            <div class="label" id="lbl_c_curator">Curatorial Lead</div>
             <div class="value" id="out_curator">Filipa Loureiro</div>
           </div>
           <div class="info-card">
-            <div class="label">Gallery & Ergonomics</div>
+            <div class="label" id="lbl_c_ergo">Gallery & Ergonomics</div>
             <div class="value" id="out_ergonomics">4 min • Headphones</div>
           </div>
         </div>
@@ -809,17 +806,17 @@
 
         <!-- Renders & Reference Images -->
         <div id="renderSection" style="display:none;">
-          <div class="section-title">🖼️ Visual Renders & Reference Images</div>
+          <div class="section-title" id="sec_renders_title">🖼️ Visual Renders & Reference Images</div>
           <div id="renderGallery" style="display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:14px; margin-bottom:24px;"></div>
         </div>
 
         <!-- Visual Maquettes & Spatial Simulation -->
-        <div class="section-title">📐 Spatial Installation Maquette & Interactive UI Prototype</div>
+        <div class="section-title" id="sec_maquette_title">📐 Spatial Installation Maquette & Interactive UI Prototype</div>
         <div class="maquette-grid">
           <!-- Architectural Spatial Blueprint (SVG) -->
           <div class="maquette-card">
             <h4>
-              <span>Gallery Spatial Maquette (Top-Down & Elevation)</span>
+              <span id="lbl_maq1_title">Gallery Spatial Maquette (Top-Down & Elevation)</span>
               <span id="maquette_mode_label" style="color:var(--accent);">AR Viewing Cone</span>
             </h4>
             <div class="svg-container" id="spatialSvgContainer"></div>
@@ -831,7 +828,7 @@
           <!-- Device Viewport Mockup -->
           <div class="maquette-card">
             <h4>
-              <span>Interactive Viewport & Hotspot Maquette</span>
+              <span id="lbl_maq2_title">Interactive Viewport & Hotspot Maquette</span>
               <span style="color:var(--curator);">Normalized [X,Y] Map</span>
             </h4>
             <div class="device-frame">
@@ -871,19 +868,19 @@
         </div>
 
         <!-- Structured Multi-Perspective Chapters -->
-        <div class="section-title">📚 Multi-Perspective Narrative & Hotspot Specification</div>
+        <div class="section-title" id="sec_chapters_title">📚 Multi-Perspective Narrative & Hotspot Specification</div>
         <div class="chapters-list" id="out_chapters_list"></div>
 
         <!-- TAM Evaluation Instrument -->
-        <div class="section-title">📊 Technology Acceptance Model (TAM) Evaluation Protocol</div>
+        <div class="section-title" id="sec_tam_title">📊 Technology Acceptance Model (TAM) Evaluation Protocol</div>
         <div class="info-card" style="margin-bottom: 16px;">
-          <div class="label" style="margin-bottom:8px;">In-Situ Visitor Micro-Survey (5-Point Likert Scale)</div>
+          <div class="label" id="lbl_tam_sub" style="margin-bottom:8px;">In-Situ Visitor Micro-Survey (5-Point Likert Scale)</div>
           <ol id="out_tam_list" style="padding-left:20px; font-size:0.9rem;"></ol>
         </div>
 
         <div style="margin-top:28px; padding-top:14px; border-top:1px solid var(--border); display:flex; justify-content:space-between; font-size:0.78rem; color:var(--muted);">
-          <span>Generated by XR Heritage Framework Toolkit (UCP Porto)</span>
-          <span>Companion JSON Ready for Unity Import (`Tools > XR Heritage Framework`)</span>
+          <span id="lbl_footer_gen">Generated by XR Heritage Framework Toolkit (UCP Porto)</span>
+          <span id="lbl_footer_unity">Companion JSON Ready for Unity Import (Tools > XR Heritage Framework)</span>
         </div>
       </div>
     </main>
@@ -1460,25 +1457,46 @@
     // ==========================================
     const I18N = {
       en: {
+        app_title: "Visual Co-Creation Studio & Exhibition Dossier Generator",
         help_btn: "Guide & Research",
-        sample_photo: "📸 Load Photography Sample",
-        sample_sculpture: "🗿 Load 3D Sculpture Sample",
-        export_json: "📦 Export Unity .JSON",
-        save_pdf: "📄 Save Visual Report (PDF)",
-        json_load_title: "📂 Load AI-Generated JSON File:",
-        json_paste_title: "📋 …or paste the JSON block from the AI chat:",
+        load_photo: "Load Photography Sample",
+        load_sculpture: "Load 3D Sculpture Sample",
+        export_json: "Export Unity .JSON",
+        save_pdf: "Save Visual Report (PDF)",
+        json_file: "📂 Load AI-Generated JSON File:",
+        json_paste: "📋 …or paste the JSON block from the AI chat:",
+        json_paste_placeholder: 'Paste here the text starting with { \"experienceId\": ... }',
         json_paste_btn: "✅ Load Pasted JSON",
-        renders_title: "🖼️ Add Renders / Reference Images (optional):",
+        renders_input: "🖼️ Add Renders / Reference Images (optional):",
         renders_hint: "AI-generated maquettes, photos of the artwork or the gallery. They appear in the report and the PDF.",
         sec1: "1. Artwork & Museum Identity",
+        f_title: "Artwork Title",
+        f_artist: "Artist Name",
+        f_year: "Creation Year",
+        f_medium: "Medium & Materiality",
+        f_dim: "Dimensions",
+        f_curator: "Curator Name",
+        f_museum: "Museum / Institution",
         sec2: "2. XR Modality & Spatial Setup",
+        f_device: "Target XR Hardware",
+        f_duration: "Session Limit (min)",
+        f_location: "Gallery / Room Location",
+        f_autonomy: "Artist Autonomy & Non-Intrusive Charter",
         sec3: "3. Multi-Perspective Chapters",
-        sec4: "4. Technology Acceptance Model (TAM)",
-        out_autonomy_title: "Artist Autonomy & Non-Interference Charter:",
-        out_maquette_title: "📐 Spatial Installation Maquette & Interactive UI Prototype",
-        out_renders_title: "🖼️ Visual Renders & Reference Images",
-        out_chapters_title: "📚 Multi-Perspective Narrative & Hotspot Specification",
-        out_tam_title: "📊 Technology Acceptance Model (TAM) Evaluation Protocol",
+        dossier_tag: "XR Cultural Heritage Conception & Co-Design Dossier",
+        c_medium: "Medium & Material",
+        c_dim: "Physical Dimensions",
+        c_curator: "Curatorial Lead",
+        c_ergo: "Gallery & Ergonomics",
+        sec_renders: "🖼️ Visual Renders & Reference Images",
+        sec_maquette: "📐 Spatial Installation Maquette & Interactive UI Prototype",
+        maq1_title: "Gallery Spatial Maquette (Top-Down & Elevation)",
+        maq2_title: "Interactive Viewport & Hotspot Maquette",
+        sec_chapters: "📚 Multi-Perspective Narrative & Hotspot Specification",
+        sec_tam: "📊 Technology Acceptance Model (TAM) Evaluation Protocol",
+        tam_sub: "In-Situ Visitor Micro-Survey (5-Point Likert Scale)",
+        footer_gen: "Generated by XR Heritage Framework Toolkit (UCP Porto)",
+        footer_unity: "Companion JSON Ready for Unity Import (Tools > XR Heritage Framework)",
         modal_title: "🏛️ Welcome to XR Heritage Framework",
         modal_intro: "This visual studio is part of a doctoral research project at the <strong>School of Arts, Universidade Católica Portuguesa (UCP Porto)</strong> by <em>Manuel Silva</em> (supervised by <em>Prof. Luís Teixeira</em>). It provides a validated bridge between <strong>AI-assisted creative mediation</strong>, <strong>curatorial autonomy</strong>, and <strong>XR game-engine implementation</strong>.",
         tab_track1: "🎨 For Artists & Curators (No-Code)",
@@ -1502,28 +1520,55 @@
         tam_title: "Technology Acceptance Model (TAM) Integration",
         tam_desc: "The framework automatically embeds validated in-situ micro-surveys measuring Perceived Usefulness (PU), Ease of Use (PEOU), Curatorial Respect (CR), and Artist Autonomy Preservation (AAP), logging anonymous visitor data to CSV.",
         dont_show: "Don't show this welcome window automatically next time",
-        btn_enter: "Start Using Studio 🚀"
+        btn_enter: "Start Using Studio 🚀",
+        dev_options: [
+          { val: "MuseumTabletAR", text: "Museum Tablet AR (Handheld)" },
+          { val: "MobileHandheldAR", text: "Visitor Smartphone AR (BYOD)" },
+          { val: "SpatialHeadsetMR", text: "Mixed Reality Headset (Passthrough)" },
+          { val: "ImmersiveVR", text: "Immersive VR Headset (Roomscale)" }
+        ]
       },
       pt: {
+        app_title: "Estúdio de Co-Criação Visual & Gerador de Dossier de Exposição",
         help_btn: "Guia & Investigação",
-        sample_photo: "📸 Carregar Exemplo Fotografia",
-        sample_sculpture: "🗿 Carregar Exemplo Escultura 3D",
-        export_json: "📦 Exportar .JSON Unity",
-        save_pdf: "📄 Guardar Relatório Visual (PDF)",
-        json_load_title: "📂 Carregar Ficheiro JSON da IA:",
-        json_paste_title: "📋 …ou cole o bloco JSON do chat com a IA:",
+        load_photo: "Carregar Exemplo Fotografia",
+        load_sculpture: "Carregar Exemplo Escultura 3D",
+        export_json: "Exportar .JSON Unity",
+        save_pdf: "Guardar Relatório Visual (PDF)",
+        json_file: "📂 Carregar Ficheiro JSON da IA:",
+        json_paste: "📋 …ou cole o bloco JSON do chat com a IA:",
+        json_paste_placeholder: 'Cole aqui o texto a começar em { \"experienceId\": ... }',
         json_paste_btn: "✅ Carregar JSON Colado",
-        renders_title: "🖼️ Adicionar Renders / Imagens de Referência (opcional):",
+        renders_input: "🖼️ Adicionar Renders / Imagens de Referência (opcional):",
         renders_hint: "Maquetas geradas por IA, fotos da obra ou do espaço da galeria. Serão incluídas no relatório e no PDF.",
         sec1: "1. Identidade da Obra & Museu",
+        f_title: "Título da Obra",
+        f_artist: "Nome do Artista",
+        f_year: "Ano de Criação",
+        f_medium: "Técnica & Materialidade",
+        f_dim: "Dimensões",
+        f_curator: "Nome do Curador",
+        f_museum: "Museu / Instituição",
         sec2: "2. Modalidade XR & Configuração Espacial",
+        f_device: "Dispositivo XR Destino",
+        f_duration: "Duração Máxima (min)",
+        f_location: "Localização na Galeria / Sala",
+        f_autonomy: "Carta de Autonomia do Artista & Não-Interferência",
         sec3: "3. Capítulos Multi-Perspetiva",
-        sec4: "4. Modelo de Aceitação Tecnológica (TAM)",
-        out_autonomy_title: "Carta de Autonomia do Artista & Não-Interferência:",
-        out_maquette_title: "📐 Maqueta Espacial da Instalação & Protótipo Interativo",
-        out_renders_title: "🖼️ Renders Visuais & Imagens de Referência",
-        out_chapters_title: "📚 Narrativa Multi-Perspetiva & Especificação de Hotspots",
-        out_tam_title: "📊 Protocolo de Avaliação (TAM)",
+        dossier_tag: "Dossier de Conceção & Co-Design de Património Cultural em XR",
+        c_medium: "Técnica & Material",
+        c_dim: "Dimensões Físicas",
+        c_curator: "Coordenação Curatorial",
+        c_ergo: "Galeria & Ergonomia",
+        sec_renders: "🖼️ Renders Visuais & Imagens de Referência",
+        sec_maquette: "📐 Maqueta Espacial da Instalação & Protótipo Interativo",
+        maq1_title: "Maqueta Espacial da Galeria (Planta & Alçado)",
+        maq2_title: "Visualização Interativa & Mapa de Hotspots",
+        sec_chapters: "📚 Narrativa Multi-Perspetiva & Especificação de Hotspots",
+        sec_tam: "📊 Protocolo de Avaliação (TAM)",
+        tam_sub: "Micro-Questionário In-Situ ao Visitante (Escala de Likert de 5 Pontos)",
+        footer_gen: "Gerado pelo XR Heritage Framework Toolkit (UCP Porto)",
+        footer_unity: "JSON Compatível Pronto para Importação no Unity (Tools > XR Heritage Framework)",
         modal_title: "🏛️ Bem-vindo ao XR Heritage Framework",
         modal_intro: "Este estúdio visual é parte de um projeto de investigação doutoral na <strong>Escola das Artes da Universidade Católica Portuguesa (UCP Porto)</strong> por <em>Manuel Silva</em> (sob orientação do <em>Prof. Doutor Luís Teixeira</em>). Estabelece uma ponte validada entre <strong>mediação criativa assistida por IA</strong>, <strong>autonomia curatorial</strong> e <strong>implementação em motores de jogo XR</strong>.",
         tab_track1: "🎨 Para Artistas & Curadores (Sem Código)",
@@ -1547,7 +1592,13 @@
         tam_title: "Integração do Modelo de Aceitação Tecnológica (TAM)",
         tam_desc: "O framework integra questionários in-situ que medem Utilidade Percebida (PU), Facilidade de Uso (PEOU), Respeito Curatorial (CR) e Preservação da Autonomia do Artista (AAP), registando dados anónimos em CSV.",
         dont_show: "Não mostrar esta janela de boas-vindas automaticamente da próxima vez",
-        btn_enter: "Entrar no Estúdio 🚀"
+        btn_enter: "Entrar no Estúdio 🚀",
+        dev_options: [
+          { val: "MuseumTabletAR", text: "Tablet de Museu em AR (Portátil/Suporte)" },
+          { val: "MobileHandheldAR", text: "Smartphone do Visitante em AR (BYOD)" },
+          { val: "SpatialHeadsetMR", text: "Óculos de Realidade Mista (Passthrough)" },
+          { val: "ImmersiveVR", text: "Óculos de Realidade Virtual Imersiva (VR)" }
+        ]
       }
     };
 
@@ -1560,34 +1611,83 @@
       document.querySelectorAll('#lang_pt, #modal_lang_pt').forEach(b => b.classList.toggle('active', lang === 'pt'));
 
       const t = I18N[lang];
-      document.getElementById('lbl_help_btn').textContent = t.help_btn;
-      document.getElementById('modal_title').innerHTML = t.modal_title;
-      document.getElementById('modal_intro').innerHTML = t.modal_intro;
-      document.getElementById('tab_btn_track1').textContent = t.tab_track1;
-      document.getElementById('tab_btn_track2').textContent = t.tab_track2;
-      document.getElementById('tab_btn_research').textContent = t.tab_research;
-      document.getElementById('m_step1_title').textContent = t.step1_title;
-      document.getElementById('m_step1_desc').textContent = t.step1_desc;
-      document.getElementById('m_btn_copy').textContent = t.btn_copy_prompt;
-      document.getElementById('m_step2_title').textContent = t.step2_title;
-      document.getElementById('m_step2_desc').textContent = t.step2_desc;
-      document.getElementById('m_step3_title').textContent = t.step3_title;
-      document.getElementById('m_step3_desc').textContent = t.step3_desc;
-      document.getElementById('m_dev_pkg_title').textContent = t.dev_pkg_title;
-      document.getElementById('m_dev_pkg_desc').textContent = t.dev_pkg_desc;
-      document.getElementById('m_dev_skills_title').textContent = t.dev_skills_title;
-      document.getElementById('m_dev_skills_desc').textContent = t.dev_skills_desc;
-      document.getElementById('m_dev_wizard_title').textContent = t.dev_wizard_title;
-      document.getElementById('m_dev_wizard_desc').textContent = t.dev_wizard_desc;
-      document.getElementById('m_res_title').textContent = t.res_title;
-      document.getElementById('m_res_desc').textContent = t.res_desc;
-      document.getElementById('m_tam_title').textContent = t.tam_title;
-      document.getElementById('m_tam_desc').textContent = t.tam_desc;
-      document.getElementById('lbl_dont_show').textContent = t.dont_show;
-      document.getElementById('btn_enter_studio').textContent = t.btn_enter;
-    }
+      if (document.getElementById('app_header_title')) document.getElementById('app_header_title').textContent = t.app_title;
+      if (document.getElementById('lbl_help_btn')) document.getElementById('lbl_help_btn').textContent = t.help_btn;
+      if (document.getElementById('lbl_load_photo')) document.getElementById('lbl_load_photo').textContent = t.load_photo;
+      if (document.getElementById('lbl_load_sculpture')) document.getElementById('lbl_load_sculpture').textContent = t.load_sculpture;
+      if (document.getElementById('lbl_export_json')) document.getElementById('lbl_export_json').textContent = t.export_json;
+      if (document.getElementById('lbl_save_pdf')) document.getElementById('lbl_save_pdf').textContent = t.save_pdf;
 
-    function openWelcomeModal() {
+      if (document.getElementById('sec_hdr_1')) document.getElementById('sec_hdr_1').textContent = t.sec1;
+      if (document.getElementById('lbl_f_title')) document.getElementById('lbl_f_title').textContent = t.f_title;
+      if (document.getElementById('lbl_f_artist')) document.getElementById('lbl_f_artist').textContent = t.f_artist;
+      if (document.getElementById('lbl_f_year')) document.getElementById('lbl_f_year').textContent = t.f_year;
+      if (document.getElementById('lbl_f_medium')) document.getElementById('lbl_f_medium').textContent = t.f_medium;
+      if (document.getElementById('lbl_f_dim')) document.getElementById('lbl_f_dim').textContent = t.f_dim;
+      if (document.getElementById('lbl_f_curator')) document.getElementById('lbl_f_curator').textContent = t.f_curator;
+      if (document.getElementById('lbl_f_museum')) document.getElementById('lbl_f_museum').textContent = t.f_museum;
+
+      if (document.getElementById('sec_hdr_2')) document.getElementById('sec_hdr_2').textContent = t.sec2;
+      if (document.getElementById('lbl_f_device')) document.getElementById('lbl_f_device').textContent = t.f_device;
+      if (document.getElementById('lbl_f_duration')) document.getElementById('lbl_f_duration').textContent = t.f_duration;
+      if (document.getElementById('lbl_f_location')) document.getElementById('lbl_f_location').textContent = t.f_location;
+      if (document.getElementById('lbl_f_autonomy')) document.getElementById('lbl_f_autonomy').textContent = t.f_autonomy;
+
+      if (document.getElementById('sec_hdr_3')) document.getElementById('sec_hdr_3').textContent = t.sec3;
+
+      if (document.getElementById('lbl_dossier_tag')) document.getElementById('lbl_dossier_tag').textContent = t.dossier_tag;
+      if (document.getElementById('lbl_c_medium')) document.getElementById('lbl_c_medium').textContent = t.c_medium;
+      if (document.getElementById('lbl_c_dim')) document.getElementById('lbl_c_dim').textContent = t.c_dim;
+      if (document.getElementById('lbl_c_curator')) document.getElementById('lbl_c_curator').textContent = t.c_curator;
+      if (document.getElementById('lbl_c_ergo')) document.getElementById('lbl_c_ergo').textContent = t.c_ergo;
+
+      if (document.getElementById('sec_renders_title')) document.getElementById('sec_renders_title').textContent = t.sec_renders;
+      if (document.getElementById('sec_maquette_title')) document.getElementById('sec_maquette_title').textContent = t.sec_maquette;
+      if (document.getElementById('lbl_maq1_title')) document.getElementById('lbl_maq1_title').textContent = t.maq1_title;
+      if (document.getElementById('lbl_maq2_title')) document.getElementById('lbl_maq2_title').textContent = t.maq2_title;
+
+      if (document.getElementById('sec_chapters_title')) document.getElementById('sec_chapters_title').textContent = t.sec_chapters;
+      if (document.getElementById('sec_tam_title')) document.getElementById('sec_tam_title').textContent = t.sec_tam;
+      if (document.getElementById('lbl_tam_sub')) document.getElementById('lbl_tam_sub').textContent = t.tam_sub;
+
+      if (document.getElementById('lbl_footer_gen')) document.getElementById('lbl_footer_gen').textContent = t.footer_gen;
+      if (document.getElementById('lbl_footer_unity')) document.getElementById('lbl_footer_unity').textContent = t.footer_unity;
+
+      // Update Device Dropdown options
+      const devSelect = document.getElementById('inp_device');
+      if (devSelect && t.dev_options) {
+        const curVal = devSelect.value;
+        devSelect.innerHTML = t.dev_options.map(o => `<option value="${o.val}">${o.text}</option>`).join('');
+        devSelect.value = curVal;
+      }
+
+      // Modal elements
+      if (document.getElementById('modal_title')) document.getElementById('modal_title').innerHTML = t.modal_title;
+      if (document.getElementById('modal_intro')) document.getElementById('modal_intro').innerHTML = t.modal_intro;
+      if (document.getElementById('tab_btn_track1')) document.getElementById('tab_btn_track1').textContent = t.tab_track1;
+      if (document.getElementById('tab_btn_track2')) document.getElementById('tab_btn_track2').textContent = t.tab_track2;
+      if (document.getElementById('tab_btn_research')) document.getElementById('tab_btn_research').textContent = t.tab_research;
+      if (document.getElementById('m_step1_title')) document.getElementById('m_step1_title').textContent = t.step1_title;
+      if (document.getElementById('m_step1_desc')) document.getElementById('m_step1_desc').textContent = t.step1_desc;
+      if (document.getElementById('m_btn_copy')) document.getElementById('m_btn_copy').textContent = t.btn_copy_prompt;
+      if (document.getElementById('m_step2_title')) document.getElementById('m_step2_title').textContent = t.step2_title;
+      if (document.getElementById('m_step2_desc')) document.getElementById('m_step2_desc').textContent = t.step2_desc;
+      if (document.getElementById('m_step3_title')) document.getElementById('m_step3_title').textContent = t.step3_title;
+      if (document.getElementById('m_step3_desc')) document.getElementById('m_step3_desc').textContent = t.step3_desc;
+      if (document.getElementById('m_dev_pkg_title')) document.getElementById('m_dev_pkg_title').textContent = t.dev_pkg_title;
+      if (document.getElementById('m_dev_pkg_desc')) document.getElementById('m_dev_pkg_desc').textContent = t.dev_pkg_desc;
+      if (document.getElementById('m_dev_skills_title')) document.getElementById('m_dev_skills_title').textContent = t.dev_skills_title;
+      if (document.getElementById('m_dev_skills_desc')) document.getElementById('m_dev_skills_desc').textContent = t.dev_skills_desc;
+      if (document.getElementById('m_dev_wizard_title')) document.getElementById('m_dev_wizard_title').textContent = t.dev_wizard_title;
+      if (document.getElementById('m_dev_wizard_desc')) document.getElementById('m_dev_wizard_desc').textContent = t.dev_wizard_desc;
+      if (document.getElementById('m_res_title')) document.getElementById('m_res_title').textContent = t.res_title;
+      if (document.getElementById('m_res_desc')) document.getElementById('m_res_desc').textContent = t.res_desc;
+      if (document.getElementById('m_tam_title')) document.getElementById('m_tam_title').textContent = t.tam_title;
+      if (document.getElementById('m_tam_desc')) document.getElementById('m_tam_desc').textContent = t.tam_desc;
+      if (document.getElementById('lbl_dont_show')) document.getElementById('lbl_dont_show').textContent = t.dont_show;
+      if (document.getElementById('btn_enter_studio')) document.getElementById('btn_enter_studio').textContent = t.btn_enter;
+    }
+function openWelcomeModal() {
       document.getElementById('welcomeModalBackdrop').classList.add('active');
     }
 
