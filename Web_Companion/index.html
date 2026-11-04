@@ -322,6 +322,30 @@
       transform: translate(-50%, -50%);
       cursor: pointer;
     }
+    .hotspot-pin { transition: transform 0.2s, opacity 0.2s; }
+    .hotspot-pin.PhysicalArtwork { background: var(--physical); box-shadow: 0 0 12px var(--physical); }
+    .hotspot-pin.ArtistVoice { background: var(--artist); box-shadow: 0 0 12px var(--artist); }
+    .hotspot-pin.CuratorialLens { background: var(--curator); box-shadow: 0 0 12px var(--curator); }
+    .hotspot-pin.dimmed { opacity: 0.2; }
+    .hotspot-pin.active { transform: translate(-50%, -50%) scale(1.35); z-index: 2; }
+    .hotspot-pin:hover { transform: translate(-50%, -50%) scale(1.2); }
+    .mock-tabs { display: flex; gap: 6px; margin-top: 8px; }
+    .mock-tab, .mock-nav-btn {
+      flex: 1; background: #1c222c; color: #ddd; border: 1px solid var(--border);
+      border-radius: 6px; padding: 5px 6px; font-size: 0.72rem; cursor: pointer;
+    }
+    .mock-tab.active { background: var(--accent); color: #000; font-weight: 700; }
+    .mock-nav { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
+    .mock-nav-btn { flex: 0 0 auto; }
+    .mock-dots { flex: 1; display: flex; justify-content: center; gap: 6px; }
+    .mock-dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,0.3); cursor: pointer; }
+    .mock-dot.active { background: #fff; transform: scale(1.3); }
+    .mock-hotspot-detail {
+      display: none; margin-top: 8px; padding: 8px 10px; border-radius: 6px;
+      background: rgba(0,0,0,0.35); border-left: 3px solid var(--accent); font-size: 0.76rem;
+    }
+    .mock-hotspot-detail.show { display: block; }
+    @media print { .mock-tabs, .mock-nav { display: none; } }
     .device-ui-drawer {
       background: rgba(20, 24, 32, 0.95);
       border: 1px solid var(--border);
@@ -575,14 +599,25 @@
                   <div style="font-size:0.7rem;" id="mock_dim_label">110 x 140 cm</div>
                 </div>
               </div>
+              <div class="mock-tabs">
+                <button class="mock-tab active" data-filter="all" onclick="setMockFilter('all')">All</button>
+                <button class="mock-tab" data-filter="ArtistVoice" onclick="setMockFilter('ArtistVoice')">🎨 Artist</button>
+                <button class="mock-tab" data-filter="CuratorialLens" onclick="setMockFilter('CuratorialLens')">🏛️ Curator</button>
+              </div>
+              <div class="mock-hotspot-detail" id="mock_hotspot_detail"></div>
               <div class="device-ui-drawer">
                 <div style="display:flex; justify-content:space-between; align-items:center;">
-                  <span style="font-size:0.7rem; font-weight:700; color:var(--artist);" id="mock_perspective">🎨 ARTIST'S PERSPECTIVE</span>
+                  <span style="font-size:0.7rem; font-weight:700;" id="mock_perspective">👁️ ARTWORK OVERVIEW</span>
                   <span style="font-size:0.7rem; color:var(--muted);" id="mock_chapter_count">1 / 3</span>
                 </div>
                 <div style="font-size:0.85rem; font-weight:600; margin:2px 0;" id="mock_chap_title">Chapter Title</div>
-                <div style="font-size:0.76rem; color:var(--muted); display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;" id="mock_chap_text">
+                <div style="font-size:0.76rem; color:var(--muted);" id="mock_chap_text">
                   Narrative preview...
+                </div>
+                <div class="mock-nav">
+                  <button class="mock-nav-btn" onclick="stepMockChapter(-1)">◀ Prev</button>
+                  <div id="mock_dots" class="mock-dots"></div>
+                  <button class="mock-nav-btn" onclick="stepMockChapter(1)">Next ▶</button>
                 </div>
               </div>
             </div>
@@ -884,25 +919,28 @@
       canvas.querySelectorAll('.hotspot-pin').forEach(n => n.remove());
 
       let pinIndex = 1;
-      (currentSpec.chapters || []).forEach(ch => {
+      (currentSpec.chapters || []).forEach((ch, chIdx) => {
         (ch.hotspots || []).forEach(hs => {
           const coords = hs.normalizedCoordinates || { x: 0.5, y: 0.5 };
+          const persp = hs.perspective || ch.perspective || 'PhysicalArtwork';
           const pin = document.createElement('div');
-          pin.className = 'hotspot-pin';
+          pin.className = `hotspot-pin ${persp}`;
+          pin.dataset.chapter = chIdx;
+          pin.dataset.perspective = ch.perspective;
           pin.style.left = `${(coords.x * 100).toFixed(0)}%`;
           pin.style.top = `${((1 - coords.y) * 100).toFixed(0)}%`;
           pin.title = `${hs.title}: ${hs.description}`;
-          pin.textContent = pinIndex++;
+          const num = pinIndex++;
+          pin.textContent = num;
+          pin.addEventListener('click', () => onMockPinClick(chIdx, hs, num));
           canvas.appendChild(pin);
         });
       });
 
-      if (currentSpec.chapters && currentSpec.chapters.length > 0) {
-        const first = currentSpec.chapters[0];
-        document.getElementById('mock_chap_title').textContent = first.chapterTitle;
-        document.getElementById('mock_chap_text').textContent = first.narrativeText;
-        document.getElementById('mock_chapter_count').textContent = `1 / ${currentSpec.chapters.length} Chapters`;
-      }
+      mockFilter = 'all';
+      mockIndex = 0;
+      document.querySelectorAll('.mock-tab').forEach(t => t.classList.toggle('active', t.dataset.filter === 'all'));
+      updateMockViewport();
 
       // Render Spatial Architectural SVG Maquette
       renderSpatialMaquetteSvg(c.deviceTarget, m.title);
@@ -940,6 +978,98 @@
         li.style.marginBottom = '4px';
         li.textContent = q;
         tamList.appendChild(li);
+      });
+    }
+
+    // ---------- Interactive Viewport Mockup ----------
+    let mockFilter = 'all';
+    let mockIndex = 0;
+    const PERSPECTIVE_UI = {
+      PhysicalArtwork: { label: '👁️ ARTWORK OVERVIEW', color: 'var(--physical)' },
+      ArtistVoice: { label: "🎨 ARTIST'S PERSPECTIVE", color: 'var(--artist)' },
+      CuratorialLens: { label: '🏛️ CURATORIAL CONTEXT', color: 'var(--curator)' },
+      ComparativeAnalysis: { label: '⚖️ COMPARATIVE ANALYSIS', color: 'var(--accent)' }
+    };
+
+    function mockVisibleChapterIndices() {
+      return (currentSpec.chapters || [])
+        .map((ch, i) => ({ ch, i }))
+        .filter(o => mockFilter === 'all' || o.ch.perspective === mockFilter)
+        .map(o => o.i);
+    }
+
+    function setMockFilter(filter) {
+      mockFilter = filter;
+      mockIndex = 0;
+      document.querySelectorAll('.mock-tab').forEach(t => t.classList.toggle('active', t.dataset.filter === filter));
+      hideMockHotspotDetail();
+      updateMockViewport();
+    }
+
+    function stepMockChapter(delta) {
+      const visible = mockVisibleChapterIndices();
+      if (!visible.length) return;
+      mockIndex = (mockIndex + delta + visible.length) % visible.length;
+      hideMockHotspotDetail();
+      updateMockViewport();
+    }
+
+    function onMockPinClick(chapterIdx, hs, num) {
+      let visible = mockVisibleChapterIndices();
+      if (!visible.includes(chapterIdx)) {
+        setMockFilter('all');
+        visible = mockVisibleChapterIndices();
+      }
+      mockIndex = visible.indexOf(chapterIdx);
+      updateMockViewport();
+      const ch = currentSpec.chapters[chapterIdx];
+      const ui = PERSPECTIVE_UI[hs.perspective || ch.perspective] || PERSPECTIVE_UI.PhysicalArtwork;
+      const box = document.getElementById('mock_hotspot_detail');
+      box.style.borderLeftColor = ui.color;
+      box.innerHTML = `<strong>📍 ${num}. ${hs.title}</strong> <span style="color:var(--muted);">(${hs.contentType || 'Image'})</span><br>${hs.description || ''}`;
+      box.classList.add('show');
+      document.querySelectorAll('#mockupHotspotCanvas .hotspot-pin').forEach(p => p.classList.remove('active'));
+      [...document.querySelectorAll('#mockupHotspotCanvas .hotspot-pin')].find(p => p.textContent == num)?.classList.add('active');
+    }
+
+    function hideMockHotspotDetail() {
+      document.getElementById('mock_hotspot_detail').classList.remove('show');
+    }
+
+    function updateMockViewport() {
+      const chapters = currentSpec.chapters || [];
+      const visible = mockVisibleChapterIndices();
+      const dots = document.getElementById('mock_dots');
+      dots.innerHTML = '';
+
+      if (!visible.length) {
+        document.getElementById('mock_chap_title').textContent = 'No chapters for this perspective';
+        document.getElementById('mock_chap_text').textContent = '';
+        document.getElementById('mock_chapter_count').textContent = '0 / 0';
+        return;
+      }
+
+      const chIdx = visible[mockIndex];
+      const ch = chapters[chIdx];
+      const ui = PERSPECTIVE_UI[ch.perspective] || PERSPECTIVE_UI.PhysicalArtwork;
+      const badge = document.getElementById('mock_perspective');
+      badge.textContent = ui.label;
+      badge.style.color = ui.color;
+      document.getElementById('mock_chap_title').textContent = ch.chapterTitle;
+      document.getElementById('mock_chap_text').textContent = ch.narrativeText;
+      document.getElementById('mock_chapter_count').textContent = `${mockIndex + 1} / ${visible.length} Chapters`;
+
+      visible.forEach((_, i) => {
+        const d = document.createElement('div');
+        d.className = 'mock-dot' + (i === mockIndex ? ' active' : '');
+        d.onclick = () => { mockIndex = i; hideMockHotspotDetail(); updateMockViewport(); };
+        dots.appendChild(d);
+      });
+
+      document.querySelectorAll('#mockupHotspotCanvas .hotspot-pin').forEach(p => {
+        const pc = parseInt(p.dataset.chapter, 10);
+        p.classList.toggle('dimmed', !visible.includes(pc));
+        p.classList.toggle('active', pc === chIdx);
       });
     }
 
