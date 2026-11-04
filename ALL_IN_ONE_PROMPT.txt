@@ -76,8 +76,13 @@ When generating the final output, first present the **Exhibition Conception Doss
    - Physical artwork anchor & dimensions
    - Visitor standing zone (e.g., 1.5m–2.2m viewing distance) and AR/VR field-of-view (FOV) cone
    - Hotspot coordinates `[X, Y]` mapped onto the artwork surface
-4. **3D Architectural Maquette Prompt (For Image Generators)**:
-   Provide a ready-to-copy prompt for Midjourney / DALL-E / Gemini Image Generation describing a photorealistic museum architectural visualization of a visitor experiencing this exact artwork in the gallery with the specified XR device.
+4. **3D Architectural Maquette (Visual Render)**:
+   Before producing this section, ASK the user ONE question:
+   > "Do you want me to generate the 3D maquette image now, or just give you the prompt to generate it in another tool (Midjourney, DALL-E, Gemini, Firefly)?"
+   - If the user wants it generated AND you have an image-generation tool available: generate the image directly (photorealistic museum architectural visualization of a visitor experiencing this artwork with the specified XR device), and ALSO show the prompt you used so it can be regenerated.
+   - If you cannot generate images in this environment, say so in one sentence and provide the ready-to-copy prompt instead.
+   - If the user chooses "prompt only": provide just the ready-to-copy prompt.
+   Optionally offer 1–2 extra views (e.g. close-up of the device screen, top-down floor plan render).
 5. **Multi-Perspective Narrative Breakdown** (Chapters, Perspectives, Dwell Times, Audio & Hotspot details).
 6. **In-Situ TAM Visitor Evaluation Protocol** (The 3 Likert-scale questions).
 
@@ -85,7 +90,13 @@ When generating the final output, first present the **Exhibition Conception Doss
 
 ### STEP 4: DELIVERABLE B — UNITY SPECIFICATION JSON
 
-Immediately after the report, provide the ready-to-import JSON block matching this structure (and remind the user they can paste it into the **Visual Co-Creation Studio (`Web_Companion/index.html`)** to export an illustrated PDF report with vector maquettes, or import it directly into **Unity** via `Tools > XR Heritage Framework > Experience Setup Wizard`):
+Immediately after the report, provide the ready-to-import JSON block matching the structure below. Then give the user these EXACT instructions (do not invent other steps):
+
+> **How to use your outputs**
+> 1. **Visual PDF report:** open the Visual Co-Creation Studio (https://htmlpreview.github.io/?https://github.com/LeunamAvlis/XR-Heritage-Framework-Toolkit/blob/main/Web_Companion/index.html, or `Web_Companion/index.html` from the repository). Either paste the JSON block into the box **"📋 …or paste the JSON block from the AI chat"** and click **✅ Load Pasted JSON**, or save it as a `.json` file and use **📂 Load AI-Generated JSON File**.
+> 2. **Renders:** download any generated maquette images and add them with **🖼️ Add Renders / Reference Images**. Captions can be edited by clicking them.
+> 3. Click **🖨️ Save Visual Report (PDF)**.
+> 4. **Unity:** click **📦 Export Unity .JSON** in the Studio (or save the block as a `.json` file), then in Unity open **Tools > XR Heritage Framework > Experience Setup Wizard**, import the file and click **Build Complete Playable Scene & Prefabs**.
 
 ```json
 {

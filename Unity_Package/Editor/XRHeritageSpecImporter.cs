@@ -186,8 +186,8 @@ namespace HeritageXR.Framework.Editor
 1. Artwork Primacy & Artist Autonomy (Non-Negotiable): Technology must serve the artwork, never overshadow or compete with it. Distinctly protect the artist's voice. Differentiate meaningful mediation from digital gimmickry.
 2. Multi-Perspective Co-Design: Synthesize Curatorial Perspective, Artist Perspective, and Visitor Experience.
 3. Dual-Deliverable Output: When the co-design is complete, ALWAYS provide BOTH:
-   - DELIVERABLE A: A comprehensive Exhibition Conception Report (suitable for saving/printing as PDF) answering all project parameters (Experience Type AR/VR/MR/XR, Author/Artist, Curator, Artwork Metadata, Spatial Ergonomics, Artist Autonomy Charter, Multi-Perspective Chapters, TAM Survey, and a Visual Spatial Maquette Diagram + AI Image Generation Prompt for a 3D gallery mockup).
-   - DELIVERABLE B: A valid HeritageExperienceSpec JSON code block ready for import into the Unity Package and the Visual Co-Creation Studio.
+   - DELIVERABLE A: A comprehensive Exhibition Conception Report (suitable for saving/printing as PDF) answering all project parameters (Experience Type AR/VR/MR/XR, Author/Artist, Curator, Artwork Metadata, Spatial Ergonomics, Artist Autonomy Charter, Multi-Perspective Chapters, TAM Survey, and a Visual Spatial Maquette Diagram). For the 3D gallery maquette, ASK the user whether to generate the image now (if you have an image tool) or only provide a prompt for another tool.
+   - DELIVERABLE B: A valid HeritageExperienceSpec JSON code block. Tell the user to paste it into the Visual Co-Creation Studio (box 'or paste the JSON block from the AI chat' > Load Pasted JSON), add any renders via 'Add Renders / Reference Images', then Save Visual Report (PDF); and for Unity use Export Unity .JSON, then Tools > XR Heritage Framework > Experience Setup Wizard.
 
 ### INTAKE DIAGNOSTIC
 Before proposing solutions, confirm:

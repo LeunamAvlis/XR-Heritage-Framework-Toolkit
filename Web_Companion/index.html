@@ -345,7 +345,7 @@
       background: rgba(0,0,0,0.35); border-left: 3px solid var(--accent); font-size: 0.76rem;
     }
     .mock-hotspot-detail.show { display: block; }
-    @media print { .mock-tabs, .mock-nav { display: none; } }
+    @media print { .mock-tabs, .mock-nav, .no-print { display: none !important; } }
     .device-ui-drawer {
       background: rgba(20, 24, 32, 0.95);
       border: 1px solid var(--border);
@@ -458,7 +458,18 @@
         <label style="font-size:0.8rem; font-weight:600; display:block; margin-bottom:6px;">
           📂 Load AI-Generated JSON File:
         </label>
-        <input type="file" id="jsonFileInput" accept=".json" style="font-size:0.8rem; width:100%;" />
+        <input type="file" id="jsonFileInput" accept=".json,.txt" style="font-size:0.8rem; width:100%;" />
+        <label style="font-size:0.8rem; font-weight:600; display:block; margin:12px 0 6px;">
+          📋 …or paste the JSON block from the AI chat:
+        </label>
+        <textarea id="jsonPasteInput" rows="5" placeholder='Paste here the text starting with { "experienceId": ... }' style="width:100%; font-family:monospace; font-size:0.72rem; background:#0e1117; color:#ddd; border:1px solid #333; border-radius:6px; padding:6px;"></textarea>
+        <button class="btn" style="width:100%; margin-top:6px;" onclick="loadPastedJson()">✅ Load Pasted JSON</button>
+
+        <label style="font-size:0.8rem; font-weight:600; display:block; margin:14px 0 6px;">
+          🖼️ Add Renders / Reference Images (optional):
+        </label>
+        <input type="file" id="renderImageInput" accept="image/*" multiple style="font-size:0.8rem; width:100%;" />
+        <div style="font-size:0.7rem; color:#888; margin-top:4px;">AI-generated maquettes, photos of the artwork or the gallery. They appear in the report and the PDF.</div>
       </div>
 
       <h2>1. Artwork & Museum Identity</h2>
@@ -565,6 +576,12 @@
             🛡️ Artist Autonomy & Mediation Boundary
           </strong>
           <p id="out_autonomy" style="font-size:0.92rem; margin-top:4px;"></p>
+        </div>
+
+        <!-- Renders & Reference Images -->
+        <div id="renderSection" style="display:none;">
+          <div class="section-title">🖼️ Visual Renders & Reference Images</div>
+          <div id="renderGallery" style="display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:14px; margin-bottom:24px;"></div>
         </div>
 
         <!-- Visual Maquettes & Spatial Simulation -->
@@ -825,7 +842,7 @@
       const reader = new FileReader();
       reader.onload = function(evt) {
         try {
-          currentSpec = JSON.parse(evt.target.result);
+          currentSpec = parseSpecText(evt.target.result);
           populateFormFromSpec();
           renderDossier();
         } catch (err) {
@@ -834,6 +851,65 @@
       };
       reader.readAsText(file);
     });
+
+    // Accepts raw JSON, or text copied from an AI chat (with ```json fences or surrounding prose)
+    function parseSpecText(text) {
+      let t = (text || '').trim();
+      const fence = t.match(/```(?:json)?\s*([\s\S]*?)```/i);
+      if (fence) t = fence[1].trim();
+      const start = t.indexOf('{');
+      const end = t.lastIndexOf('}');
+      if (start < 0 || end <= start) throw new Error('No JSON object found. Make sure you copied the block starting with "{".');
+      t = t.slice(start, end + 1)
+           .replace(/[\u201C\u201D]/g, '"')   // smart double quotes
+           .replace(/,\s*([}\]])/g, '$1');    // trailing commas
+      return JSON.parse(t);
+    }
+
+    function loadPastedJson() {
+      try {
+        currentSpec = parseSpecText(document.getElementById('jsonPasteInput').value);
+        populateFormFromSpec();
+        renderDossier();
+        document.getElementById('jsonPasteInput').value = '';
+      } catch (err) {
+        alert('Could not read the pasted JSON:\n' + err.message);
+      }
+    }
+
+    // ---------- Renders / reference images ----------
+    const renderImages = [];
+    document.getElementById('renderImageInput').addEventListener('change', function(e) {
+      [...e.target.files].forEach(file => {
+        const reader = new FileReader();
+        reader.onload = evt => {
+          renderImages.push({ src: evt.target.result, caption: file.name.replace(/\.[^.]+$/, '') });
+          renderImageGallery();
+        };
+        reader.readAsDataURL(file);
+      });
+      e.target.value = '';
+    });
+
+    function renderImageGallery() {
+      const section = document.getElementById('renderSection');
+      const gallery = document.getElementById('renderGallery');
+      section.style.display = renderImages.length ? 'block' : 'none';
+      gallery.innerHTML = '';
+      renderImages.forEach((img, i) => {
+        const fig = document.createElement('figure');
+        fig.style.cssText = 'margin:0; background:rgba(0,0,0,0.25); border:1px solid #2a2f3a; border-radius:8px; overflow:hidden; break-inside:avoid; position:relative;';
+        fig.innerHTML = `
+          <img src="${img.src}" style="width:100%; display:block;" />
+          <figcaption contenteditable="true" title="Click to edit caption" style="padding:8px 10px; font-size:0.8rem; color:#bbb;"></figcaption>
+          <button class="no-print" title="Remove" style="position:absolute; top:6px; right:6px; background:#000a; color:#fff; border:none; border-radius:50%; width:24px; height:24px; cursor:pointer;">✕</button>`;
+        const cap = fig.querySelector('figcaption');
+        cap.textContent = img.caption;
+        cap.addEventListener('input', () => { img.caption = cap.textContent; });
+        fig.querySelector('button').onclick = () => { renderImages.splice(i, 1); renderImageGallery(); };
+        gallery.appendChild(fig);
+      });
+    }
 
     function populateFormFromSpec() {
       const m = currentSpec.metadata || {};
