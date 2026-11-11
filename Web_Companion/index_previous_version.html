@@ -1,0 +1,1729 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>XR Heritage Framework — Visual Co-Creation Studio & Report Generator</title>
+  <style>
+    :root {
+      --bg: #0f1115;
+      --panel: #181b22;
+      --panel-alt: #20242d;
+      --border: #2c323f;
+      --text: #f0f2f5;
+      --muted: #9ba3b0;
+      --accent: #d4a359;
+      --accent-blue: #4ea8de;
+      --artist: #f59e0b;
+      --curator: #38bdf8;
+      --physical: #10b981;
+      --danger: #ef4444;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+    }
+
+    /* Top Header */
+    header.app-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 28px;
+      background: var(--panel);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .brand-badge {
+      background: var(--accent);
+      color: #000;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 0.8rem;
+      letter-spacing: 0.05em;
+    }
+    .brand h1 {
+      font-size: 1.15rem;
+      font-weight: 600;
+    }
+    .header-actions {
+      display: flex;
+      gap: 10px;
+    }
+    button.btn {
+      background: var(--panel-alt);
+      color: var(--text);
+      border: 1px solid var(--border);
+      padding: 8px 15px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.88rem;
+      font-weight: 500;
+      transition: all 0.15s;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    button.btn:hover {
+      border-color: var(--accent);
+      background: #262b36;
+    }
+    button.btn-primary {
+      background: var(--accent);
+      color: #111;
+      border-color: var(--accent);
+      font-weight: 600;
+    }
+    button.btn-primary:hover {
+      background: #e2b36b;
+    }
+    button.btn-blue {
+      background: var(--accent-blue);
+      color: #081119;
+      border-color: var(--accent-blue);
+      font-weight: 600;
+    }
+
+    /* Main Workspace Layout */
+    .workspace {
+      display: grid;
+      grid-template-columns: 420px 1fr;
+      min-height: calc(100vh - 61px);
+    }
+
+    /* Left Sidebar Editor */
+    .sidebar {
+      background: var(--panel);
+      border-right: 1px solid var(--border);
+      padding: 20px;
+      overflow-y: auto;
+      max-height: calc(100vh - 61px);
+    }
+    .sidebar h2 {
+      font-size: 0.95rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--accent);
+      margin-bottom: 12px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid var(--border);
+    }
+    .form-group {
+      margin-bottom: 14px;
+    }
+    .form-group label {
+      display: block;
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 8px 10px;
+      border-radius: 5px;
+      font-size: 0.88rem;
+      font-family: inherit;
+    }
+    .form-group textarea {
+      resize: vertical;
+      min-height: 60px;
+    }
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .json-import-box {
+      background: var(--panel-alt);
+      border: 1px dashed var(--border);
+      padding: 12px;
+      border-radius: 6px;
+      margin-bottom: 20px;
+    }
+
+    /* Right Preview / Printable Report */
+    .report-preview {
+      padding: 32px 44px;
+      overflow-y: auto;
+      max-height: calc(100vh - 61px);
+      background: #13161c;
+    }
+    .dossier-sheet {
+      max-width: 980px;
+      margin: 0 auto;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 40px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.45);
+    }
+
+    /* Dossier Header */
+    .dossier-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      border-bottom: 2px solid var(--accent);
+      padding-bottom: 22px;
+      margin-bottom: 28px;
+    }
+    .dossier-tag {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--accent);
+      font-weight: 700;
+    }
+    .dossier-title {
+      font-size: 2rem;
+      font-weight: 700;
+      margin: 4px 0;
+    }
+    .dossier-subtitle {
+      color: var(--muted);
+      font-size: 1rem;
+    }
+    .meta-badges {
+      text-align: right;
+    }
+    .badge-pill {
+      display: inline-block;
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      background: var(--panel-alt);
+      border: 1px solid var(--border);
+      margin-bottom: 6px;
+    }
+
+    /* Grid Cards */
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      margin-bottom: 28px;
+    }
+    .info-card {
+      background: var(--panel-alt);
+      border: 1px solid var(--border);
+      padding: 14px;
+      border-radius: 8px;
+    }
+    .info-card .label {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      color: var(--muted);
+      letter-spacing: 0.05em;
+    }
+    .info-card .value {
+      font-size: 0.98rem;
+      font-weight: 600;
+      margin-top: 4px;
+    }
+
+    /* Section Headings */
+    .section-title {
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: var(--accent);
+      margin: 30px 0 14px 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 8px;
+    }
+
+    /* Maquette Visualizers */
+    .maquette-grid {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 20px;
+      margin-bottom: 24px;
+    }
+    .maquette-card {
+      background: #11141a;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px;
+    }
+    .maquette-card h4 {
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-bottom: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      display: flex;
+      justify-content: space-between;
+    }
+    .svg-container {
+      width: 100%;
+      background: #0b0d12;
+      border-radius: 6px;
+      border: 1px solid #222834;
+      overflow: hidden;
+    }
+
+    /* Device UI Simulation Mockup */
+    .device-frame {
+      background: #08090c;
+      border: 6px solid #2e3543;
+      border-radius: 18px;
+      padding: 14px;
+      position: relative;
+      min-height: 310px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .device-artwork-bg {
+      background: linear-gradient(135deg, #1e2430 0%, #12151c 100%);
+      border: 1px solid #333b4d;
+      border-radius: 8px;
+      height: 165px;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .hotspot-pin {
+      position: absolute;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: rgba(212, 163, 89, 0.9);
+      color: #000;
+      font-weight: 700;
+      font-size: 0.72rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid #fff;
+      box-shadow: 0 0 12px rgba(212, 163, 89, 0.8);
+      transform: translate(-50%, -50%);
+      cursor: pointer;
+    }
+    .hotspot-pin { transition: transform 0.2s, opacity 0.2s; }
+    .hotspot-pin.PhysicalArtwork { background: var(--physical); box-shadow: 0 0 12px var(--physical); }
+    .hotspot-pin.ArtistVoice { background: var(--artist); box-shadow: 0 0 12px var(--artist); }
+    .hotspot-pin.CuratorialLens { background: var(--curator); box-shadow: 0 0 12px var(--curator); }
+    .hotspot-pin.dimmed { opacity: 0.2; }
+    .hotspot-pin.active { transform: translate(-50%, -50%) scale(1.35); z-index: 2; }
+    .hotspot-pin:hover { transform: translate(-50%, -50%) scale(1.2); }
+    .mock-tabs { display: flex; gap: 6px; margin-top: 8px; }
+    .mock-tab, .mock-nav-btn {
+      flex: 1; background: #1c222c; color: #ddd; border: 1px solid var(--border);
+      border-radius: 6px; padding: 5px 6px; font-size: 0.72rem; cursor: pointer;
+    }
+    .mock-tab.active { background: var(--accent); color: #000; font-weight: 700; }
+    .mock-nav { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
+    .mock-nav-btn { flex: 0 0 auto; }
+    .mock-dots { flex: 1; display: flex; justify-content: center; gap: 6px; }
+    .mock-dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,0.3); cursor: pointer; }
+    .mock-dot.active { background: #fff; transform: scale(1.3); }
+    .mock-hotspot-detail {
+      display: none; margin-top: 8px; padding: 8px 10px; border-radius: 6px;
+      background: rgba(0,0,0,0.35); border-left: 3px solid var(--accent); font-size: 0.76rem;
+    }
+    .mock-hotspot-detail.show { display: block; }
+    @media print { .mock-tabs, .mock-nav, .no-print { display: none !important; } }
+    .device-ui-drawer {
+      background: rgba(20, 24, 32, 0.95);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 12px;
+      margin-top: 10px;
+    }
+
+    /* Chapters List */
+    .chapters-list {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .chapter-box {
+      background: var(--panel-alt);
+      border-left: 4px solid var(--accent);
+      border-radius: 6px;
+      padding: 14px 18px;
+    }
+    .chapter-box.ArtistVoice { border-left-color: var(--artist); }
+    .chapter-box.CuratorialLens { border-left-color: var(--curator); }
+    .chapter-box.PhysicalArtwork { border-left-color: var(--physical); }
+
+    .chapter-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+    .perspective-label {
+      font-size: 0.73rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      padding: 2px 8px;
+      border-radius: 4px;
+      background: rgba(255,255,255,0.07);
+    }
+
+    .autonomy-box {
+      background: rgba(245, 158, 11, 0.08);
+      border: 1px solid rgba(245, 158, 11, 0.4);
+      padding: 14px 18px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+
+    /* Print Styles for Clean PDF Export */
+    @media print {
+      body {
+        background: #fff;
+        color: #111;
+      }
+      header.app-header,
+      .sidebar {
+        display: none !important;
+      }
+      .workspace {
+        display: block;
+      }
+      .report-preview {
+        padding: 0;
+        max-height: none;
+        overflow: visible;
+        background: #fff;
+      }
+      .dossier-sheet {
+        box-shadow: none;
+        border: none;
+        background: #fff;
+        color: #111;
+        padding: 10px;
+        max-width: 100%;
+      }
+      .info-card, .chapter-box, .maquette-card {
+        background: #f8f9fa !important;
+        border-color: #cbd5e1 !important;
+        color: #111 !important;
+        break-inside: avoid;
+      }
+      .dossier-subtitle, .info-card .label, .maquette-card h4 {
+        color: #475569 !important;
+      }
+      .section-title {
+        color: #92400e !important;
+        border-bottom-color: #cbd5e1 !important;
+      }
+    }
+  
+    /* Welcome Modal & Backdrop */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(10, 12, 16, 0.82);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+    .modal-backdrop.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .welcome-modal {
+      background: #141720;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      max-width: 820px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.75), 0 0 0 1px rgba(212, 163, 89, 0.3);
+      display: flex;
+      flex-direction: column;
+    }
+    .modal-header {
+      padding: 18px 24px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #191d27;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    .modal-body {
+      padding: 24px;
+      font-size: 0.92rem;
+      line-height: 1.6;
+    }
+    .modal-tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 12px;
+    }
+    .modal-tab-btn {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 0.85rem;
+      font-weight: 600;
+      padding: 8px 14px;
+      cursor: pointer;
+      border-radius: 8px;
+      transition: all 0.2s;
+    }
+    .modal-tab-btn:hover {
+      color: var(--text);
+      border-color: var(--accent);
+    }
+    .modal-tab-btn.active {
+      background: rgba(212, 163, 89, 0.15);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+    .step-card {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px 16px;
+      margin-bottom: 12px;
+    }
+    .step-card h4 {
+      color: var(--accent);
+      font-size: 0.95rem;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .prompt-snippet-box {
+      background: #0d0f14;
+      border: 1px solid #2d3340;
+      border-radius: 6px;
+      padding: 10px;
+      font-family: monospace;
+      font-size: 0.78rem;
+      color: #cbd5e1;
+      max-height: 140px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      margin: 8px 0;
+      user-select: all;
+    }
+    .lang-switcher {
+      display: inline-flex;
+      background: #11141a;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 2px;
+      gap: 2px;
+    }
+    .lang-btn {
+      background: transparent;
+      border: none;
+      color: var(--muted);
+      padding: 4px 12px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      border-radius: 16px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .lang-btn.active {
+      background: var(--accent);
+      color: #000;
+    }
+    @media print {
+      .modal-backdrop, .lang-switcher, #btn_help_open { display: none !important; }
+    }
+
+  </style>
+</head>
+<body>
+
+  
+  <!-- Welcome & Research Modal -->
+  <div class="modal-backdrop active" id="welcomeModalBackdrop">
+    <div class="welcome-modal">
+      <div class="modal-header">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <span class="brand-badge" style="font-size:0.75rem;">RESEARCH UCP PORTO</span>
+          <h3 style="font-size:1.1rem; margin:0;" id="modal_title">🏛️ Welcome to XR Heritage Framework</h3>
+        </div>
+        <div style="display:flex; align-items:center; gap:10px;">
+          <div class="lang-switcher">
+            <button class="lang-btn active" id="modal_lang_en" onclick="setLanguage('en')">EN</button>
+            <button class="lang-btn" id="modal_lang_pt" onclick="setLanguage('pt')">PT</button>
+          </div>
+          <button onclick="closeWelcomeModal()" style="background:transparent; border:none; color:var(--muted); font-size:1.4rem; cursor:pointer; line-height:1;">✕</button>
+        </div>
+      </div>
+      <div class="modal-body">
+        <p id="modal_intro" style="color:#cbd5e1; margin-bottom:16px;">
+          This visual studio is part of a doctoral research project at the <strong>School of Arts, Universidade Católica Portuguesa (UCP Porto)</strong> by <em>Manuel Silva</em> (supervised by <em>Prof. Luís Teixeira</em>). It provides a validated bridge between <strong>AI-assisted creative mediation</strong>, <strong>curatorial autonomy</strong>, and <strong>XR game-engine implementation</strong>.
+        </p>
+
+        <div class="modal-tabs">
+          <button class="modal-tab-btn active" id="tab_btn_track1" onclick="switchModalTab('track1')">🎨 For Artists & Curators (No-Code)</button>
+          <button class="modal-tab-btn" id="tab_btn_track2" onclick="switchModalTab('track2')">💻 For Developers & Tech-Savvy</button>
+          <button class="modal-tab-btn" id="tab_btn_research" onclick="switchModalTab('research')">🔬 Research & TAM Foundation</button>
+        </div>
+
+        <!-- TAB 1: ARTISTS & CURATORS -->
+        <div id="modal_tab_track1">
+          <div class="step-card">
+            <h4><span style="background:var(--accent); color:#000; border-radius:50%; width:20px; height:20px; display:inline-flex; align-items:center; justify-content:center; font-size:0.75rem;">1</span> <span id="m_step1_title">Co-Design with the AI Assistant</span></h4>
+            <p id="m_step1_desc" style="font-size:0.86rem; color:#9ba3b0;">Copy our Master AI Prompt and paste it into ChatGPT, Claude, Gemini, or Perplexity. The AI will first ask for your role (Artist or Curator) to adapt its language, protect your creative voice, and produce your experience design.</p>
+            <div style="display:flex; gap:8px; margin-top:8px;">
+              <button class="btn btn-blue" style="font-size:0.8rem; padding:6px 12px;" onclick="copyMasterPromptFromModal()">📋 <span id="m_btn_copy">Copy Master AI Prompt</span></button>
+              <a href="https://github.com/LeunamAvlis/XR-Heritage-Framework-Toolkit/blob/main/ALL_IN_ONE_PROMPT.txt" target="_blank" class="btn" style="font-size:0.8rem; padding:6px 12px; text-decoration:none;">📄 View on GitHub</a>
+            </div>
+          </div>
+
+          <div class="step-card">
+            <h4><span style="background:var(--accent); color:#000; border-radius:50%; width:20px; height:20px; display:inline-flex; align-items:center; justify-content:center; font-size:0.75rem;">2</span> <span id="m_step2_title">Visualize & Generate PDF Dossier</span></h4>
+            <p id="m_step2_desc" style="font-size:0.86rem; color:#9ba3b0;">Paste the AI's JSON output directly into this Studio. Preview the 3D gallery floorplan maquette and interactive viewport, attach your visual renders, and click <strong>Save Visual Report (PDF)</strong> for your exhibition team.</p>
+          </div>
+
+          <div class="step-card">
+            <h4><span style="background:var(--accent); color:#000; border-radius:50%; width:20px; height:20px; display:inline-flex; align-items:center; justify-content:center; font-size:0.75rem;">3</span> <span id="m_step3_title">Developer Handoff or Gentle Engine On-Ramp</span></h4>
+            <p id="m_step3_desc" style="font-size:0.86rem; color:#9ba3b0;">Click <strong>Export Unity .JSON</strong> to send to your developer. Or if you want to try testing it yourself in Unity, our guide will walk you through a gentle 3-step no-code walkthrough.</p>
+          </div>
+        </div>
+
+        <!-- TAB 2: DEVELOPERS & TECH-SAVVY -->
+        <div id="modal_tab_track2" style="display:none;">
+          <div class="step-card">
+            <h4>📦 <span id="m_dev_pkg_title">Install Unity Package (UPM)</span></h4>
+            <p id="m_dev_pkg_desc" style="font-size:0.86rem; color:#9ba3b0;">Add the package via Git URL in Unity Package Manager (Unity 2021.3 LTS+):</p>
+            <div class="prompt-snippet-box">https://github.com/LeunamAvlis/XR-Heritage-Framework-Toolkit.git?path=/Unity_Package</div>
+          </div>
+          <div class="step-card">
+            <h4>🤖 <span id="m_dev_skills_title">Modular AI Skills & Antigravity</span></h4>
+            <p id="m_dev_skills_desc" style="font-size:0.86rem; color:#9ba3b0;">For CLI / Antigravity / Agentic developers, all 4 modular AI skills are located in <code>AI_Skills/</code>. You can run individual agents for profiling, affordance matchmaking, and TAM generation.</p>
+          </div>
+          <div class="step-card">
+            <h4>🎨 <span id="m_dev_wizard_title">1-Click Experience Setup Wizard</span></h4>
+            <p id="m_dev_wizard_desc" style="font-size:0.86rem; color:#9ba3b0;">Open <code>Tools > XR Heritage Framework > Experience Setup Wizard</code> in Unity. Importing the artist's JSON automatically installs AR/VR SDKs, builds the XR Rig, instantiates 3D Hotspot pins, and wires the UI canvas.</p>
+          </div>
+        </div>
+
+        <!-- TAB 3: RESEARCH & TAM FOUNDATION -->
+        <div id="modal_tab_research" style="display:none;">
+          <div class="step-card">
+            <h4>🔬 <span id="m_res_title">Doctoral Research Context</span></h4>
+            <p id="m_res_desc" style="font-size:0.86rem; color:#9ba3b0;">Developed at School of Arts, Portuguese Catholic University (UCP Porto). Built on an empirical benchmark of 80+ Worldwide museum XR projects (2005–2024) and evaluated by panels of curators, artists, and creative technologists.</p>
+          </div>
+          <div class="step-card">
+            <h4>📊 <span id="m_tam_title">Technology Acceptance Model (TAM) Integration</span></h4>
+            <p id="m_tam_desc" style="font-size:0.86rem; color:#9ba3b0;">The framework automatically embeds validated in-situ micro-surveys measuring Perceived Usefulness (PU), Ease of Use (PEOU), Curatorial Respect (CR), and Artist Autonomy Preservation (AAP), logging anonymous visitor data to CSV.</p>
+          </div>
+        </div>
+      </div>
+      <div style="padding:14px 24px; border-top:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; background:#191d27; border-radius:0 0 14px 14px;">
+        <label style="display:flex; align-items:center; gap:8px; font-size:0.8rem; color:var(--muted); cursor:pointer;">
+          <input type="checkbox" id="chk_hide_welcome" /> <span id="lbl_dont_show">Don't show this welcome window automatically next time</span>
+        </label>
+        <button class="btn btn-primary" onclick="closeWelcomeModal()" style="padding:8px 20px;"><span id="btn_enter_studio">Start Using Studio 🚀</span></button>
+      </div>
+    </div>
+  </div>
+
+  <header class="app-header">
+    <div class="brand">
+      <span class="brand-badge">XR HERITAGE v2.2</span>
+      <h1 id="app_header_title">Visual Co-Creation Studio & Exhibition Dossier Generator</h1>
+    </div>
+    
+      <div class="header-actions">
+      <div class="lang-switcher">
+        <button class="lang-btn active" id="lang_en" onclick="setLanguage('en')">EN</button>
+        <button class="lang-btn" id="lang_pt" onclick="setLanguage('pt')">PT</button>
+      </div>
+      <button class="btn" id="btn_help_open" onclick="openWelcomeModal()">ℹ️ <span id="lbl_help_btn">Guide & Research</span></button>
+      <button class="btn" id="btn_load_photo" onclick="loadSample('photo')">📸 <span id="lbl_load_photo">Load Photography Sample</span></button>
+      <button class="btn" id="btn_load_sculpture" onclick="loadSample('sculpture')">🗿 <span id="lbl_load_sculpture">Load 3D Sculpture Sample</span></button>
+      <button class="btn btn-blue" id="btn_export_json" onclick="downloadJson()">📦 <span id="lbl_export_json">Export Unity .JSON</span></button>
+      <button class="btn btn-primary" id="btn_save_pdf" onclick="window.print()">📄 <span id="lbl_save_pdf">Save Visual Report (PDF)</span></button>
+    </div>
+  </header>
+
+  <div class="workspace">
+    <!-- Left Editor Panel -->
+    <aside class="sidebar">
+      <div class="json-import-box">
+        <label style="font-size:0.8rem; font-weight:600; display:block; margin-bottom:6px;">
+          📂 Load AI-Generated JSON File:
+        </label>
+        <input type="file" id="jsonFileInput" accept=".json,.txt" style="font-size:0.8rem; width:100%;" />
+        <label style="font-size:0.8rem; font-weight:600; display:block; margin:12px 0 6px;">
+          📋 …or paste the JSON block from the AI chat:
+        </label>
+        <textarea id="jsonPasteInput" rows="5" placeholder='Paste here the text starting with { "experienceId": ... }' style="width:100%; font-family:monospace; font-size:0.72rem; background:#0e1117; color:#ddd; border:1px solid #333; border-radius:6px; padding:6px;"></textarea>
+        <button class="btn" style="width:100%; margin-top:6px;" onclick="loadPastedJson()">✅ Load Pasted JSON</button>
+
+        <label style="font-size:0.8rem; font-weight:600; display:block; margin:14px 0 6px;">
+          🖼️ Add Renders / Reference Images (optional):
+        </label>
+        <input type="file" id="renderImageInput" accept="image/*" multiple style="font-size:0.8rem; width:100%;" />
+        <div style="font-size:0.7rem; color:#888; margin-top:4px;">AI-generated maquettes, photos of the artwork or the gallery. They appear in the report and the PDF.</div>
+      </div>
+
+      <h2 id="sec_hdr_1">1. Artwork & Museum Identity</h2>
+      <div class="form-group">
+        <label id="lbl_f_title">Artwork Title</label>
+        <input type="text" id="inp_title" oninput="syncFromForm()" />
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label id="lbl_f_artist">Artist Name</label>
+          <input type="text" id="inp_artist" oninput="syncFromForm()" />
+        </div>
+        <div class="form-group">
+          <label id="lbl_f_year">Creation Year</label>
+          <input type="text" id="inp_year" oninput="syncFromForm()" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label id="lbl_f_medium">Medium & Materiality</label>
+        <input type="text" id="inp_medium" oninput="syncFromForm()" />
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label id="lbl_f_dim">Dimensions</label>
+          <input type="text" id="inp_dimensions" oninput="syncFromForm()" />
+        </div>
+        <div class="form-group">
+          <label id="lbl_f_curator">Curator Name</label>
+          <input type="text" id="inp_curator" oninput="syncFromForm()" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label id="lbl_f_museum">Museum / Institution</label>
+        <input type="text" id="inp_museum" oninput="syncFromForm()" />
+      </div>
+
+      <h2 id="sec_hdr_2">2. XR Modality & Spatial Setup</h2>
+      <div class="form-row">
+        <div class="form-group">
+          <label id="lbl_f_device">Target XR Hardware</label>
+          <select id="inp_device" onchange="syncFromForm()">
+            <option value="MuseumTabletAR">Museum Tablet AR (Handheld)</option>
+            <option value="MobileHandheldAR">Visitor Smartphone AR (BYOD)</option>
+            <option value="SpatialHeadsetMR">Mixed Reality Headset (Passthrough)</option>
+            <option value="ImmersiveVR">Immersive VR Headset (Roomscale)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label id="lbl_f_duration">Session Limit (min)</label>
+          <input type="number" step="0.5" id="inp_duration" oninput="syncFromForm()" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label id="lbl_f_location">Gallery / Room Location</label>
+        <input type="text" id="inp_location" oninput="syncFromForm()" />
+      </div>
+      <div class="form-group">
+        <label id="lbl_f_autonomy">Artist Autonomy & Non-Intrusive Charter</label>
+        <textarea id="inp_autonomy" oninput="syncFromForm()"></textarea>
+      </div>
+
+      <h2 id="sec_hdr_3">3. Multi-Perspective Chapters</h2>
+      <div id="chaptersEditorContainer"></div>
+    </aside>
+
+    <!-- Right Live Dossier & Maquette Preview -->
+    <main class="report-preview">
+      <div class="dossier-sheet" id="printableDossier">
+        <div class="dossier-header">
+          <div>
+            <div class="dossier-tag" id="lbl_dossier_tag">XR Cultural Heritage Conception & Co-Design Dossier</div>
+            <h2 class="dossier-title" id="out_title">Stillness and Resonance</h2>
+            <div class="dossier-subtitle" id="out_subtitle">By Carlos Lobo (2024) — Serralves Museum of Contemporary Art</div>
+          </div>
+          <div class="meta-badges">
+            <div class="badge-pill" id="out_device_badge">📱 MuseumTabletAR</div><br/>
+            <span style="font-size:0.78rem; color:var(--muted);" id="out_id">ID: test-heritage-experience-01</span>
+          </div>
+        </div>
+
+        <!-- Key Characteristics Grid -->
+        <div class="info-grid">
+          <div class="info-card">
+            <div class="label" id="lbl_c_medium">Medium & Material</div>
+            <div class="value" id="out_medium">Analog photography</div>
+          </div>
+          <div class="info-card">
+            <div class="label" id="lbl_c_dim">Physical Dimensions</div>
+            <div class="value" id="out_dimensions">110 x 140 cm</div>
+          </div>
+          <div class="info-card">
+            <div class="label" id="lbl_c_curator">Curatorial Lead</div>
+            <div class="value" id="out_curator">Filipa Loureiro</div>
+          </div>
+          <div class="info-card">
+            <div class="label" id="lbl_c_ergo">Gallery & Ergonomics</div>
+            <div class="value" id="out_ergonomics">4 min • Headphones</div>
+          </div>
+        </div>
+
+        <!-- Artist Autonomy Charter -->
+        <div class="autonomy-box">
+          <strong style="color:var(--artist); font-size:0.85rem; text-transform:uppercase; letter-spacing:0.05em;">
+            🛡️ Artist Autonomy & Mediation Boundary
+          </strong>
+          <p id="out_autonomy" style="font-size:0.92rem; margin-top:4px;"></p>
+        </div>
+
+        <!-- Renders & Reference Images -->
+        <div id="renderSection" style="display:none;">
+          <div class="section-title" id="sec_renders_title">🖼️ Visual Renders & Reference Images</div>
+          <div id="renderGallery" style="display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:14px; margin-bottom:24px;"></div>
+        </div>
+
+        <!-- Visual Maquettes & Spatial Simulation -->
+        <div class="section-title" id="sec_maquette_title">📐 Spatial Installation Maquette & Interactive UI Prototype</div>
+        <div class="maquette-grid">
+          <!-- Architectural Spatial Blueprint (SVG) -->
+          <div class="maquette-card">
+            <h4>
+              <span id="lbl_maq1_title">Gallery Spatial Maquette (Top-Down & Elevation)</span>
+              <span id="maquette_mode_label" style="color:var(--accent);">AR Viewing Cone</span>
+            </h4>
+            <div class="svg-container" id="spatialSvgContainer"></div>
+            <p style="font-size:0.78rem; color:var(--muted); margin-top:8px;" id="maquette_caption">
+              Spatial diagram illustrating physical artwork placement, optimal visitor stand distance (1.5m), acoustic isolation zone, and tracking frustum.
+            </p>
+          </div>
+
+          <!-- Device Viewport Mockup -->
+          <div class="maquette-card">
+            <h4>
+              <span id="lbl_maq2_title">Interactive Viewport & Hotspot Maquette</span>
+              <span style="color:var(--curator);">Normalized [X,Y] Map</span>
+            </h4>
+            <div class="device-frame">
+              <div style="display:flex; justify-content:space-between; font-size:0.72rem; color:var(--muted); margin-bottom:6px;">
+                <span id="mock_header_title">ARTWORK VIEWPORT</span>
+                <span style="color:var(--accent);">● LIVE AR TRACKING</span>
+              </div>
+              <div class="device-artwork-bg" id="mockupHotspotCanvas">
+                <div style="text-align:center; pointer-events:none; opacity:0.45;">
+                  <div style="font-size:0.8rem; font-weight:600;" id="mock_art_label">[ Physical Artwork Target ]</div>
+                  <div style="font-size:0.7rem;" id="mock_dim_label">110 x 140 cm</div>
+                </div>
+              </div>
+              <div class="mock-tabs">
+                <button class="mock-tab active" data-filter="all" onclick="setMockFilter('all')">All</button>
+                <button class="mock-tab" data-filter="ArtistVoice" onclick="setMockFilter('ArtistVoice')">🎨 Artist</button>
+                <button class="mock-tab" data-filter="CuratorialLens" onclick="setMockFilter('CuratorialLens')">🏛️ Curator</button>
+              </div>
+              <div class="mock-hotspot-detail" id="mock_hotspot_detail"></div>
+              <div class="device-ui-drawer">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                  <span style="font-size:0.7rem; font-weight:700;" id="mock_perspective">👁️ ARTWORK OVERVIEW</span>
+                  <span style="font-size:0.7rem; color:var(--muted);" id="mock_chapter_count">1 / 3</span>
+                </div>
+                <div style="font-size:0.85rem; font-weight:600; margin:2px 0;" id="mock_chap_title">Chapter Title</div>
+                <div style="font-size:0.76rem; color:var(--muted);" id="mock_chap_text">
+                  Narrative preview...
+                </div>
+                <div class="mock-nav">
+                  <button class="mock-nav-btn" onclick="stepMockChapter(-1)">◀ Prev</button>
+                  <div id="mock_dots" class="mock-dots"></div>
+                  <button class="mock-nav-btn" onclick="stepMockChapter(1)">Next ▶</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Structured Multi-Perspective Chapters -->
+        <div class="section-title" id="sec_chapters_title">📚 Multi-Perspective Narrative & Hotspot Specification</div>
+        <div class="chapters-list" id="out_chapters_list"></div>
+
+        <!-- TAM Evaluation Instrument -->
+        <div class="section-title" id="sec_tam_title">📊 Technology Acceptance Model (TAM) Evaluation Protocol</div>
+        <div class="info-card" style="margin-bottom: 16px;">
+          <div class="label" id="lbl_tam_sub" style="margin-bottom:8px;">In-Situ Visitor Micro-Survey (5-Point Likert Scale)</div>
+          <ol id="out_tam_list" style="padding-left:20px; font-size:0.9rem;"></ol>
+        </div>
+
+        <div style="margin-top:28px; padding-top:14px; border-top:1px solid var(--border); display:flex; justify-content:space-between; font-size:0.78rem; color:var(--muted);">
+          <span id="lbl_footer_gen">Generated by XR Heritage Framework Toolkit (UCP Porto)</span>
+          <span id="lbl_footer_unity">Companion JSON Ready for Unity Import (Tools > XR Heritage Framework)</span>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    const SAMPLES = {
+      photo: {
+        experienceId: "test-heritage-experience-01",
+        version: "2.0",
+        metadata: {
+          title: "Stillness and Resonance",
+          artistName: "Carlos Lobo",
+          creationYear: "2024",
+          medium: "Medium-format analog photography on baryta paper",
+          physicalDimensions: "110 x 140 cm",
+          museumOrCollection: "Serralves Museum of Contemporary Art",
+          curatorName: "Filipa Loureiro"
+        },
+        exhibitionConstraints: {
+          location: "Main Gallery, North Wing",
+          deviceTarget: "MuseumTabletAR",
+          requireHeadphones: true,
+          maxRecommendedSessionMinutes: 4.0,
+          artistAutonomyBoundary: "No intrusive digital animations superimposed over the photographic emulsion. Preparatory field contact prints and audio reflections appear exclusively via side drawer."
+        },
+        chapters: [
+          {
+            chapterId: "chap_01_physical",
+            chapterTitle: "1. The Physical Composition",
+            perspective: "PhysicalArtwork",
+            narrativeText: "Observe the subtle chromatic gradient between the industrial tower and the overcast sky. Analog grain gives tactile depth to the quiet horizon.",
+            suggestedDwellTimeSeconds: 20,
+            hotspots: [
+              {
+                id: "spot_gradient",
+                title: "Atmospheric Twilight",
+                description: "Captured at dusk with an exposure time of 1/8s, capturing ambient sodium mist.",
+                perspective: "PhysicalArtwork",
+                contentType: "Image",
+                normalizedCoordinates: { x: 0.5, y: 0.7, z: 0.0 }
+              }
+            ]
+          },
+          {
+            chapterId: "chap_02_artist",
+            chapterTitle: "2. The Artist's Vision",
+            perspective: "ArtistVoice",
+            narrativeText: "Carlos Lobo: 'I wanted to capture the lingering resonance of obsolete transmission antennas. The silence of broadcasting towers after signals cease.'",
+            audioClipPath: "Audio/carlos_lobo_test_voice.mp3",
+            suggestedDwellTimeSeconds: 30,
+            hotspots: [
+              {
+                id: "spot_contact_sheet",
+                title: "Field Contact Sheet",
+                description: "Exploratory roll film exposures taken earlier that morning before selecting this precise angle.",
+                perspective: "ArtistVoice",
+                contentType: "InteractiveComparisonSlider",
+                normalizedCoordinates: { x: 0.28, y: 0.38, z: 0.0 }
+              }
+            ]
+          },
+          {
+            chapterId: "chap_03_curator",
+            chapterTitle: "3. Curatorial Analysis",
+            perspective: "CuratorialLens",
+            narrativeText: "Filipa Loureiro deconstructs the artwork: 'This work bridges industrial archaeology and contemporary landscape contemplation, creating a dialogue with the museum's architecture.'",
+            audioClipPath: "Audio/filipa_loureiro_context.mp3",
+            suggestedDwellTimeSeconds: 25,
+            hotspots: [
+              {
+                id: "spot_territorial_context",
+                title: "Territory and Memory",
+                description: "Historical mapping contextualizing decommissioned telecommunication infrastructure in Northern Portugal.",
+                perspective: "CuratorialLens",
+                contentType: "Model3D",
+                normalizedCoordinates: { x: 0.75, y: 0.45, z: 0.0 }
+              }
+            ]
+          }
+        ],
+        tamEvaluation: {
+          enabled: true,
+          quickSurveyQuestions: [
+            "Did this experience deepen your appreciation of the photograph?",
+            "Was the multi-perspective navigation (Artist vs Curator) clear and easy to use?",
+            "Did the digital mediation respect the quiet museum environment?"
+          ]
+        }
+      },
+      sculpture: {
+        experienceId: "archeo-medieval-sculpture-relic",
+        version: "2.0",
+        metadata: {
+          title: "Romanesque Capital: Daniel in the Lions' Den",
+          artistName: "Anonymous Master of Rates",
+          creationYear: "c. 1180",
+          medium: "Carved Granitic Stone with traces of polychromy",
+          physicalDimensions: "48 x 52 x 45 cm",
+          museumOrCollection: "National Archaeological Museum",
+          curatorName: "Dr. Henrique Vasconcelos"
+        },
+        exhibitionConstraints: {
+          location: "Medieval Cloister Wing, Room 4",
+          deviceTarget: "SpatialHeadsetMR",
+          requireHeadphones: false,
+          maxRecommendedSessionMinutes: 6.0,
+          artistAutonomyBoundary: "Preserve historical gravitas. Virtual reconstructions of missing stone carvings must remain visually translucent so visitors clearly distinguish original stone from hypothetical restoration."
+        },
+        chapters: [
+          {
+            chapterId: "relic_chap_01",
+            chapterTitle: "1. The Weathered Granite",
+            perspective: "PhysicalArtwork",
+            narrativeText: "Notice the deep incisions made by hand chisels into coarse-grain northern granite, surviving eight centuries of weathering.",
+            suggestedDwellTimeSeconds: 25,
+            hotspots: [
+              {
+                id: "spot_pigment",
+                title: "Lapis Lazuli Traces",
+                description: "Multi-spectral macro imaging reveals microscopic lapis lazuli and vermilion pigment in the folds.",
+                perspective: "PhysicalArtwork",
+                contentType: "Image",
+                normalizedCoordinates: { x: 0.42, y: 0.52, z: 0.2 }
+              }
+            ]
+          },
+          {
+            chapterId: "relic_chap_02",
+            chapterTitle: "2. The Stone Mason's Craft",
+            perspective: "ArtistVoice",
+            narrativeText: "Reconstruction of the medieval stone carver's atelier: chisel angles, geometric compass ratios, and workshop marks.",
+            suggestedDwellTimeSeconds: 35,
+            hotspots: [
+              {
+                id: "spot_toolmarks",
+                title: "Claw Chisel Strokes",
+                description: "3D photogrammetric normal map highlighting tool strokes unique to the 12th-century guild.",
+                perspective: "ArtistVoice",
+                contentType: "Model3D",
+                normalizedCoordinates: { x: 0.65, y: 0.35, z: 0.1 }
+              }
+            ]
+          },
+          {
+            chapterId: "relic_chap_03",
+            chapterTitle: "3. Architectural Reintegration",
+            perspective: "CuratorialLens",
+            narrativeText: "The capital originally crowned the north portal archway of the monastery, demolished in the 18th century.",
+            suggestedDwellTimeSeconds: 30,
+            hotspots: [
+              {
+                id: "spot_portal",
+                title: "Volumetric Archway Ghost",
+                description: "Translucent 1:1 holographic projection of the original monastery portal hovering above the pedestal.",
+                perspective: "CuratorialLens",
+                contentType: "Model3D",
+                normalizedCoordinates: { x: 0.5, y: 0.85, z: 0.0 }
+              }
+            ]
+          }
+        ],
+        tamEvaluation: {
+          enabled: true,
+          quickSurveyQuestions: [
+            "Did seeing the translucent portal reconstruction help you understand the fragment's original context?",
+            "Was the spatial mixed-reality view comfortable and natural?",
+            "Was the distinction between authentic stone and digital reconstruction clear?"
+          ]
+        }
+      }
+    };
+
+    let currentSpec = JSON.parse(JSON.stringify(SAMPLES.photo));
+
+    function loadSample(key) {
+      currentSpec = JSON.parse(JSON.stringify(SAMPLES[key]));
+      populateFormFromSpec();
+      renderDossier();
+    }
+
+    document.getElementById('jsonFileInput').addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(evt) {
+        try {
+          currentSpec = parseSpecText(evt.target.result);
+          populateFormFromSpec();
+          renderDossier();
+        } catch (err) {
+          alert('Invalid JSON file: ' + err.message);
+        }
+      };
+      reader.readAsText(file);
+    });
+
+    // Accepts raw JSON, or text copied from an AI chat (with ```json fences or surrounding prose)
+    function parseSpecText(text) {
+      let t = (text || '').trim();
+      const fence = t.match(/```(?:json)?\s*([\s\S]*?)```/i);
+      if (fence) t = fence[1].trim();
+      const start = t.indexOf('{');
+      const end = t.lastIndexOf('}');
+      if (start < 0 || end <= start) throw new Error('No JSON object found. Make sure you copied the block starting with "{".');
+      t = t.slice(start, end + 1)
+           .replace(/[\u201C\u201D]/g, '"')   // smart double quotes
+           .replace(/,\s*([}\]])/g, '$1');    // trailing commas
+      return JSON.parse(t);
+    }
+
+    function loadPastedJson() {
+      try {
+        currentSpec = parseSpecText(document.getElementById('jsonPasteInput').value);
+        populateFormFromSpec();
+        renderDossier();
+        document.getElementById('jsonPasteInput').value = '';
+      } catch (err) {
+        alert('Could not read the pasted JSON:\n' + err.message);
+      }
+    }
+
+    // ---------- Renders / reference images ----------
+    const renderImages = [];
+    document.getElementById('renderImageInput').addEventListener('change', function(e) {
+      [...e.target.files].forEach(file => {
+        const reader = new FileReader();
+        reader.onload = evt => {
+          renderImages.push({ src: evt.target.result, caption: file.name.replace(/\.[^.]+$/, '') });
+          renderImageGallery();
+        };
+        reader.readAsDataURL(file);
+      });
+      e.target.value = '';
+    });
+
+    function renderImageGallery() {
+      const section = document.getElementById('renderSection');
+      const gallery = document.getElementById('renderGallery');
+      section.style.display = renderImages.length ? 'block' : 'none';
+      gallery.innerHTML = '';
+      renderImages.forEach((img, i) => {
+        const fig = document.createElement('figure');
+        fig.style.cssText = 'margin:0; background:rgba(0,0,0,0.25); border:1px solid #2a2f3a; border-radius:8px; overflow:hidden; break-inside:avoid; position:relative;';
+        fig.innerHTML = `
+          <img src="${img.src}" style="width:100%; display:block;" />
+          <figcaption contenteditable="true" title="Click to edit caption" style="padding:8px 10px; font-size:0.8rem; color:#bbb;"></figcaption>
+          <button class="no-print" title="Remove" style="position:absolute; top:6px; right:6px; background:#000a; color:#fff; border:none; border-radius:50%; width:24px; height:24px; cursor:pointer;">✕</button>`;
+        const cap = fig.querySelector('figcaption');
+        cap.textContent = img.caption;
+        cap.addEventListener('input', () => { img.caption = cap.textContent; });
+        fig.querySelector('button').onclick = () => { renderImages.splice(i, 1); renderImageGallery(); };
+        gallery.appendChild(fig);
+      });
+    }
+
+    function populateFormFromSpec() {
+      const m = currentSpec.metadata || {};
+      const c = currentSpec.exhibitionConstraints || {};
+      document.getElementById('inp_title').value = m.title || '';
+      document.getElementById('inp_artist').value = m.artistName || '';
+      document.getElementById('inp_year').value = m.creationYear || '';
+      document.getElementById('inp_medium').value = m.medium || '';
+      document.getElementById('inp_dimensions').value = m.physicalDimensions || '';
+      document.getElementById('inp_curator').value = m.curatorName || '';
+      document.getElementById('inp_museum').value = m.museumOrCollection || '';
+
+      document.getElementById('inp_device').value = c.deviceTarget || 'MuseumTabletAR';
+      document.getElementById('inp_duration').value = c.maxRecommendedSessionMinutes || 4.0;
+      document.getElementById('inp_location').value = c.location || '';
+      document.getElementById('inp_autonomy').value = c.artistAutonomyBoundary || '';
+
+      renderChaptersEditor();
+    }
+
+    function renderChaptersEditor() {
+      const container = document.getElementById('chaptersEditorContainer');
+      container.innerHTML = '';
+      (currentSpec.chapters || []).forEach((ch, idx) => {
+        const div = document.createElement('div');
+        div.style.cssText = 'background:var(--panel-alt); padding:10px; border-radius:6px; margin-bottom:10px; border:1px solid var(--border);';
+        div.innerHTML = `
+          <div style="font-size:0.78rem; font-weight:700; color:var(--accent); margin-bottom:6px;">${ch.chapterTitle} (${ch.perspective})</div>
+          <textarea data-idx="${idx}" class="chap-text-inp" style="width:100%; background:var(--bg); color:var(--text); border:1px solid var(--border); border-radius:4px; padding:6px; font-size:0.8rem; min-height:52px;">${ch.narrativeText}</textarea>
+        `;
+        container.appendChild(div);
+      });
+      container.querySelectorAll('.chap-text-inp').forEach(el => {
+        el.addEventListener('input', function() {
+          const i = parseInt(this.getAttribute('data-idx'));
+          currentSpec.chapters[i].narrativeText = this.value;
+          renderDossier();
+        });
+      });
+    }
+
+    function syncFromForm() {
+      currentSpec.metadata.title = document.getElementById('inp_title').value;
+      currentSpec.metadata.artistName = document.getElementById('inp_artist').value;
+      currentSpec.metadata.creationYear = document.getElementById('inp_year').value;
+      currentSpec.metadata.medium = document.getElementById('inp_medium').value;
+      currentSpec.metadata.physicalDimensions = document.getElementById('inp_dimensions').value;
+      currentSpec.metadata.curatorName = document.getElementById('inp_curator').value;
+      currentSpec.metadata.museumOrCollection = document.getElementById('inp_museum').value;
+
+      currentSpec.exhibitionConstraints.deviceTarget = document.getElementById('inp_device').value;
+      currentSpec.exhibitionConstraints.maxRecommendedSessionMinutes = parseFloat(document.getElementById('inp_duration').value) || 4.0;
+      currentSpec.exhibitionConstraints.location = document.getElementById('inp_location').value;
+      currentSpec.exhibitionConstraints.artistAutonomyBoundary = document.getElementById('inp_autonomy').value;
+
+      // Keep top-level flat fields synced for Unity backward compatibility
+      currentSpec.exhibitionLocation = currentSpec.exhibitionConstraints.location;
+      currentSpec.maxRecommendedSessionMinutes = currentSpec.exhibitionConstraints.maxRecommendedSessionMinutes;
+
+      renderDossier();
+    }
+
+    function renderDossier() {
+      const m = currentSpec.metadata || {};
+      const c = currentSpec.exhibitionConstraints || {};
+
+      document.getElementById('out_title').textContent = m.title || 'Untitled Experience';
+      document.getElementById('out_subtitle').textContent = `By ${m.artistName || 'Unknown Artist'} (${m.creationYear || 'n.d.'}) — ${m.museumOrCollection || ''}`;
+      document.getElementById('out_device_badge').textContent = `🥽 ${c.deviceTarget || 'MuseumTabletAR'}`;
+      document.getElementById('out_id').textContent = `ID: ${currentSpec.experienceId || 'custom-spec'}`;
+
+      document.getElementById('out_medium').textContent = m.medium || '-';
+      document.getElementById('out_dimensions').textContent = m.physicalDimensions || '-';
+      document.getElementById('out_curator').textContent = m.curatorName || '-';
+      document.getElementById('out_ergonomics').textContent = `${c.maxRecommendedSessionMinutes || 4} min • ${c.location || 'Gallery'}`;
+      document.getElementById('out_autonomy').textContent = c.artistAutonomyBoundary || 'Technology must serve the physical artwork without intrusive overlays.';
+
+      // Render Mockup Viewport
+      document.getElementById('mock_art_label').textContent = `[ ${m.title || 'Artwork Target'} ]`;
+      document.getElementById('mock_dim_label').textContent = m.physicalDimensions || '';
+
+      const canvas = document.getElementById('mockupHotspotCanvas');
+      canvas.querySelectorAll('.hotspot-pin').forEach(n => n.remove());
+
+      let pinIndex = 1;
+      (currentSpec.chapters || []).forEach((ch, chIdx) => {
+        (ch.hotspots || []).forEach(hs => {
+          const coords = hs.normalizedCoordinates || { x: 0.5, y: 0.5 };
+          const persp = hs.perspective || ch.perspective || 'PhysicalArtwork';
+          const pin = document.createElement('div');
+          pin.className = `hotspot-pin ${persp}`;
+          pin.dataset.chapter = chIdx;
+          pin.dataset.perspective = ch.perspective;
+          pin.style.left = `${(coords.x * 100).toFixed(0)}%`;
+          pin.style.top = `${((1 - coords.y) * 100).toFixed(0)}%`;
+          pin.title = `${hs.title}: ${hs.description}`;
+          const num = pinIndex++;
+          pin.textContent = num;
+          pin.addEventListener('click', () => onMockPinClick(chIdx, hs, num));
+          canvas.appendChild(pin);
+        });
+      });
+
+      mockFilter = 'all';
+      mockIndex = 0;
+      document.querySelectorAll('.mock-tab').forEach(t => t.classList.toggle('active', t.dataset.filter === 'all'));
+      updateMockViewport();
+
+      // Render Spatial Architectural SVG Maquette
+      renderSpatialMaquetteSvg(c.deviceTarget, m.title);
+
+      // Render Chapters List
+      const chapList = document.getElementById('out_chapters_list');
+      chapList.innerHTML = '';
+      (currentSpec.chapters || []).forEach(ch => {
+        const box = document.createElement('div');
+        box.className = `chapter-box ${ch.perspective}`;
+        const hsHtml = (ch.hotspots || []).map((h, i) => `
+          <div style="margin-top:8px; padding:8px 10px; background:rgba(0,0,0,0.22); border-radius:4px; font-size:0.82rem;">
+            <strong>📍 Hotspot [${h.normalizedCoordinates?.x ?? 0.5}, ${h.normalizedCoordinates?.y ?? 0.5}] — ${h.title}</strong> (${h.contentType || 'Image'}):
+            <span style="color:var(--muted);">${h.description}</span>
+          </div>
+        `).join('');
+
+        box.innerHTML = `
+          <div class="chapter-header">
+            <strong>${ch.chapterTitle}</strong>
+            <span class="perspective-label">${ch.perspective} • ~${ch.suggestedDwellTimeSeconds || 20}s dwell</span>
+          </div>
+          <p style="font-size:0.9rem;">${ch.narrativeText}</p>
+          ${hsHtml}
+        `;
+        chapList.appendChild(box);
+      });
+
+      // Render TAM List
+      const tamList = document.getElementById('out_tam_list');
+      tamList.innerHTML = '';
+      const questions = (currentSpec.tamEvaluation && currentSpec.tamEvaluation.quickSurveyQuestions) || currentSpec.customTamQuestions || [];
+      questions.forEach(q => {
+        const li = document.createElement('li');
+        li.style.marginBottom = '4px';
+        li.textContent = q;
+        tamList.appendChild(li);
+      });
+    }
+
+    // ---------- Interactive Viewport Mockup ----------
+    let mockFilter = 'all';
+    let mockIndex = 0;
+    const PERSPECTIVE_UI = {
+      PhysicalArtwork: { label: '👁️ ARTWORK OVERVIEW', color: 'var(--physical)' },
+      ArtistVoice: { label: "🎨 ARTIST'S PERSPECTIVE", color: 'var(--artist)' },
+      CuratorialLens: { label: '🏛️ CURATORIAL CONTEXT', color: 'var(--curator)' },
+      ComparativeAnalysis: { label: '⚖️ COMPARATIVE ANALYSIS', color: 'var(--accent)' }
+    };
+
+    function mockVisibleChapterIndices() {
+      return (currentSpec.chapters || [])
+        .map((ch, i) => ({ ch, i }))
+        .filter(o => mockFilter === 'all' || o.ch.perspective === mockFilter)
+        .map(o => o.i);
+    }
+
+    function setMockFilter(filter) {
+      mockFilter = filter;
+      mockIndex = 0;
+      document.querySelectorAll('.mock-tab').forEach(t => t.classList.toggle('active', t.dataset.filter === filter));
+      hideMockHotspotDetail();
+      updateMockViewport();
+    }
+
+    function stepMockChapter(delta) {
+      const visible = mockVisibleChapterIndices();
+      if (!visible.length) return;
+      mockIndex = (mockIndex + delta + visible.length) % visible.length;
+      hideMockHotspotDetail();
+      updateMockViewport();
+    }
+
+    function onMockPinClick(chapterIdx, hs, num) {
+      let visible = mockVisibleChapterIndices();
+      if (!visible.includes(chapterIdx)) {
+        setMockFilter('all');
+        visible = mockVisibleChapterIndices();
+      }
+      mockIndex = visible.indexOf(chapterIdx);
+      updateMockViewport();
+      const ch = currentSpec.chapters[chapterIdx];
+      const ui = PERSPECTIVE_UI[hs.perspective || ch.perspective] || PERSPECTIVE_UI.PhysicalArtwork;
+      const box = document.getElementById('mock_hotspot_detail');
+      box.style.borderLeftColor = ui.color;
+      box.innerHTML = `<strong>📍 ${num}. ${hs.title}</strong> <span style="color:var(--muted);">(${hs.contentType || 'Image'})</span><br>${hs.description || ''}`;
+      box.classList.add('show');
+      document.querySelectorAll('#mockupHotspotCanvas .hotspot-pin').forEach(p => p.classList.remove('active'));
+      [...document.querySelectorAll('#mockupHotspotCanvas .hotspot-pin')].find(p => p.textContent == num)?.classList.add('active');
+    }
+
+    function hideMockHotspotDetail() {
+      document.getElementById('mock_hotspot_detail').classList.remove('show');
+    }
+
+    function updateMockViewport() {
+      const chapters = currentSpec.chapters || [];
+      const visible = mockVisibleChapterIndices();
+      const dots = document.getElementById('mock_dots');
+      dots.innerHTML = '';
+
+      if (!visible.length) {
+        document.getElementById('mock_chap_title').textContent = 'No chapters for this perspective';
+        document.getElementById('mock_chap_text').textContent = '';
+        document.getElementById('mock_chapter_count').textContent = '0 / 0';
+        return;
+      }
+
+      const chIdx = visible[mockIndex];
+      const ch = chapters[chIdx];
+      const ui = PERSPECTIVE_UI[ch.perspective] || PERSPECTIVE_UI.PhysicalArtwork;
+      const badge = document.getElementById('mock_perspective');
+      badge.textContent = ui.label;
+      badge.style.color = ui.color;
+      document.getElementById('mock_chap_title').textContent = ch.chapterTitle;
+      document.getElementById('mock_chap_text').textContent = ch.narrativeText;
+      document.getElementById('mock_chapter_count').textContent = `${mockIndex + 1} / ${visible.length} Chapters`;
+
+      visible.forEach((_, i) => {
+        const d = document.createElement('div');
+        d.className = 'mock-dot' + (i === mockIndex ? ' active' : '');
+        d.onclick = () => { mockIndex = i; hideMockHotspotDetail(); updateMockViewport(); };
+        dots.appendChild(d);
+      });
+
+      document.querySelectorAll('#mockupHotspotCanvas .hotspot-pin').forEach(p => {
+        const pc = parseInt(p.dataset.chapter, 10);
+        p.classList.toggle('dimmed', !visible.includes(pc));
+        p.classList.toggle('active', pc === chIdx);
+      });
+    }
+
+    function renderSpatialMaquetteSvg(deviceTarget, artTitle) {
+      const container = document.getElementById('spatialSvgContainer');
+      const isHeadset = deviceTarget === 'SpatialHeadsetMR' || deviceTarget === 'ImmersiveVR';
+      document.getElementById('maquette_mode_label').textContent = isHeadset ? '360° Spatial Zone' : 'Handheld AR Frustum (1.5m)';
+
+      if (!isHeadset) {
+        container.innerHTML = `
+          <svg viewBox="0 0 500 260" width="100%" height="230" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <pattern id="grid" width="25" height="25" patternUnits="userSpaceOnUse">
+                <path d="M 25 0 L 0 0 0 25" fill="none" stroke="#1b202b" stroke-width="1"/>
+              </pattern>
+              <linearGradient id="fovGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#d4a359" stop-opacity="0.38"/>
+                <stop offset="100%" stop-color="#d4a359" stop-opacity="0.03"/>
+              </linearGradient>
+            </defs>
+            <rect width="500" height="260" fill="url(#grid)" />
+            <!-- Museum Gallery Wall -->
+            <rect x="40" y="18" width="420" height="10" fill="#475569" rx="2"/>
+            <text x="250" y="14" fill="#9ba3b0" font-size="10" text-anchor="middle" font-weight="bold">MUSEUM GALLERY WALL (NORTH ELEVATION)</text>
+            <!-- Physical Artwork Mount -->
+            <rect x="175" y="28" width="150" height="8" fill="#10b981"/>
+            <text x="250" y="50" fill="#10b981" font-size="11" text-anchor="middle" font-weight="bold">🖼️ Physical Artwork Target</text>
+            <!-- AR Camera Tracking Cone -->
+            <polygon points="175,32 325,32 275,180 225,180" fill="url(#fovGrad)" stroke="#d4a359" stroke-dasharray="4,4"/>
+            <!-- Distance Marker -->
+            <line x1="365" y1="32" x2="365" y2="185" stroke="#4ea8de" stroke-width="1.5" stroke-dasharray="3,3"/>
+            <text x="415" y="115" fill="#4ea8de" font-size="10" text-anchor="middle">1.5m – 2.0m</text>
+            <text x="415" y="128" fill="#9ba3b0" font-size="9" text-anchor="middle">Optimal Viewing</text>
+            <!-- Tablet Stand / Visitor Position -->
+            <circle cx="250" cy="195" r="24" fill="none" stroke="#38bdf8" stroke-width="1.5" stroke-dasharray="4,3"/>
+            <rect x="236" y="174" width="28" height="8" fill="#d4a359" rx="2"/>
+            <circle cx="250" cy="198" r="10" fill="#38bdf8"/>
+            <text x="250" y="236" fill="#f0f2f5" font-size="11" text-anchor="middle" font-weight="bold">👤 Visitor + AR Tablet</text>
+            <text x="250" y="249" fill="#9ba3b0" font-size="9" text-anchor="middle">Acoustic Headphone Zone</text>
+          </svg>
+        `;
+      } else {
+        container.innerHTML = `
+          <svg viewBox="0 0 500 260" width="100%" height="230" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <pattern id="grid2" width="25" height="25" patternUnits="userSpaceOnUse">
+                <path d="M 25 0 L 0 0 0 25" fill="none" stroke="#1b202b" stroke-width="1"/>
+              </pattern>
+            </defs>
+            <rect width="500" height="260" fill="url(#grid2)" />
+            <!-- 360 Walk-around Zone -->
+            <circle cx="250" cy="125" r="95" fill="rgba(56, 189, 248, 0.05)" stroke="#38bdf8" stroke-width="1.5" stroke-dasharray="6,4"/>
+            <circle cx="250" cy="125" r="60" fill="rgba(212, 163, 89, 0.1)" stroke="#d4a359" stroke-width="1" stroke-dasharray="3,3"/>
+            <!-- Central Pedestal / 3D Relic -->
+            <rect x="225" y="100" width="50" height="50" fill="#1e293b" stroke="#10b981" stroke-width="2" rx="6"/>
+            <text x="250" y="128" fill="#10b981" font-size="10" text-anchor="middle" font-weight="bold">3D RELIC</text>
+            <!-- Visitor with Spatial Headset -->
+            <circle cx="250" cy="220" r="11" fill="#d4a359"/>
+            <polygon points="250,208 215,145 285,145" fill="rgba(212,163,89,0.22)"/>
+            <text x="250" y="247" fill="#f0f2f5" font-size="11" text-anchor="middle" font-weight="bold">🥽 Visitor in Spatial MR/VR (6DoF)</text>
+            <text x="90" y="45" fill="#38bdf8" font-size="10">2.5m Radius Safe Walk Zone</text>
+          </svg>
+        `;
+      }
+    }
+
+    function downloadJson() {
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(currentSpec, null, 2));
+      const a = document.createElement('a');
+      a.setAttribute("href", dataStr);
+      a.setAttribute("download", (currentSpec.experienceId || "heritage_experience") + ".json");
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+    }
+
+    // Initialize on load
+    populateFormFromSpec();
+    renderDossier();
+  
+    // ==========================================
+    // BILINGUAL (EN / PT) & WELCOME MODAL LOGIC
+    // ==========================================
+    const I18N = {
+      en: {
+        app_title: "Visual Co-Creation Studio & Exhibition Dossier Generator",
+        help_btn: "Guide & Research",
+        load_photo: "Load Photography Sample",
+        load_sculpture: "Load 3D Sculpture Sample",
+        export_json: "Export Unity .JSON",
+        save_pdf: "Save Visual Report (PDF)",
+        json_file: "📂 Load AI-Generated JSON File:",
+        json_paste: "📋 …or paste the JSON block from the AI chat:",
+        json_paste_placeholder: 'Paste here the text starting with { \"experienceId\": ... }',
+        json_paste_btn: "✅ Load Pasted JSON",
+        renders_input: "🖼️ Add Renders / Reference Images (optional):",
+        renders_hint: "AI-generated maquettes, photos of the artwork or the gallery. They appear in the report and the PDF.",
+        sec1: "1. Artwork & Museum Identity",
+        f_title: "Artwork Title",
+        f_artist: "Artist Name",
+        f_year: "Creation Year",
+        f_medium: "Medium & Materiality",
+        f_dim: "Dimensions",
+        f_curator: "Curator Name",
+        f_museum: "Museum / Institution",
+        sec2: "2. XR Modality & Spatial Setup",
+        f_device: "Target XR Hardware",
+        f_duration: "Session Limit (min)",
+        f_location: "Gallery / Room Location",
+        f_autonomy: "Artist Autonomy & Non-Intrusive Charter",
+        sec3: "3. Multi-Perspective Chapters",
+        dossier_tag: "XR Cultural Heritage Conception & Co-Design Dossier",
+        c_medium: "Medium & Material",
+        c_dim: "Physical Dimensions",
+        c_curator: "Curatorial Lead",
+        c_ergo: "Gallery & Ergonomics",
+        sec_renders: "🖼️ Visual Renders & Reference Images",
+        sec_maquette: "📐 Spatial Installation Maquette & Interactive UI Prototype",
+        maq1_title: "Gallery Spatial Maquette (Top-Down & Elevation)",
+        maq2_title: "Interactive Viewport & Hotspot Maquette",
+        sec_chapters: "📚 Multi-Perspective Narrative & Hotspot Specification",
+        sec_tam: "📊 Technology Acceptance Model (TAM) Evaluation Protocol",
+        tam_sub: "In-Situ Visitor Micro-Survey (5-Point Likert Scale)",
+        footer_gen: "Generated by XR Heritage Framework Toolkit (UCP Porto)",
+        footer_unity: "Companion JSON Ready for Unity Import (Tools > XR Heritage Framework)",
+        modal_title: "🏛️ Welcome to XR Heritage Framework",
+        modal_intro: "This visual studio is part of a doctoral research project at the <strong>School of Arts, Universidade Católica Portuguesa (UCP Porto)</strong> by <em>Manuel Silva</em> (supervised by <em>Prof. Luís Teixeira</em>). It provides a validated bridge between <strong>AI-assisted creative mediation</strong>, <strong>curatorial autonomy</strong>, and <strong>XR game-engine implementation</strong>.",
+        tab_track1: "🎨 For Artists & Curators (No-Code)",
+        tab_track2: "💻 For Developers & Tech-Savvy",
+        tab_research: "🔬 Research & TAM Foundation",
+        step1_title: "Co-Design with the AI Assistant",
+        step1_desc: "Copy our Master AI Prompt and paste it into ChatGPT, Claude, Gemini, or Perplexity. The AI will first ask for your role (Artist or Curator) to adapt its language, protect your creative voice, and produce your experience design.",
+        btn_copy_prompt: "Copy Master AI Prompt",
+        step2_title: "Visualize & Generate PDF Dossier",
+        step2_desc: "Paste the AI's JSON output directly into this Studio. Preview the 3D gallery floorplan maquette and interactive viewport, attach your visual renders, and click Save Visual Report (PDF) for your exhibition team.",
+        step3_title: "Developer Handoff or Gentle Engine On-Ramp",
+        step3_desc: "Click Export Unity .JSON to send to your developer. Or if you want to try testing it yourself in Unity, our guide will walk you through a gentle 3-step no-code walkthrough.",
+        dev_pkg_title: "Install Unity Package (UPM)",
+        dev_pkg_desc: "Add the package via Git URL in Unity Package Manager (Unity 2021.3 LTS+):",
+        dev_skills_title: "Modular AI Skills & Antigravity",
+        dev_skills_desc: "For CLI / Antigravity / Agentic developers, all 4 modular AI skills are located in AI_Skills/. You can run individual agents for profiling, affordance matchmaking, and TAM generation.",
+        dev_wizard_title: "1-Click Experience Setup Wizard",
+        dev_wizard_desc: "Open Tools > XR Heritage Framework > Experience Setup Wizard in Unity. Importing the artist's JSON automatically installs AR/VR SDKs, builds the XR Rig, instantiates 3D Hotspot pins, and wires the UI canvas.",
+        res_title: "Doctoral Research Context",
+        res_desc: "Developed at School of Arts, Portuguese Catholic University (UCP Porto). Built on an empirical benchmark of 80+ Worldwide museum XR projects (2005–2024) and evaluated by panels of curators, artists, and creative technologists.",
+        tam_title: "Technology Acceptance Model (TAM) Integration",
+        tam_desc: "The framework automatically embeds validated in-situ micro-surveys measuring Perceived Usefulness (PU), Ease of Use (PEOU), Curatorial Respect (CR), and Artist Autonomy Preservation (AAP), logging anonymous visitor data to CSV.",
+        dont_show: "Don't show this welcome window automatically next time",
+        btn_enter: "Start Using Studio 🚀",
+        dev_options: [
+          { val: "MuseumTabletAR", text: "Museum Tablet AR (Handheld)" },
+          { val: "MobileHandheldAR", text: "Visitor Smartphone AR (BYOD)" },
+          { val: "SpatialHeadsetMR", text: "Mixed Reality Headset (Passthrough)" },
+          { val: "ImmersiveVR", text: "Immersive VR Headset (Roomscale)" }
+        ]
+      },
+      pt: {
+        app_title: "Estúdio de Co-Criação Visual & Gerador de Dossier de Exposição",
+        help_btn: "Guia & Investigação",
+        load_photo: "Carregar Exemplo Fotografia",
+        load_sculpture: "Carregar Exemplo Escultura 3D",
+        export_json: "Exportar .JSON Unity",
+        save_pdf: "Guardar Relatório Visual (PDF)",
+        json_file: "📂 Carregar Ficheiro JSON da IA:",
+        json_paste: "📋 …ou cole o bloco JSON do chat com a IA:",
+        json_paste_placeholder: 'Cole aqui o texto a começar em { \"experienceId\": ... }',
+        json_paste_btn: "✅ Carregar JSON Colado",
+        renders_input: "🖼️ Adicionar Renders / Imagens de Referência (opcional):",
+        renders_hint: "Maquetas geradas por IA, fotos da obra ou do espaço da galeria. Serão incluídas no relatório e no PDF.",
+        sec1: "1. Identidade da Obra & Museu",
+        f_title: "Título da Obra",
+        f_artist: "Nome do Artista",
+        f_year: "Ano de Criação",
+        f_medium: "Técnica & Materialidade",
+        f_dim: "Dimensões",
+        f_curator: "Nome do Curador",
+        f_museum: "Museu / Instituição",
+        sec2: "2. Modalidade XR & Configuração Espacial",
+        f_device: "Dispositivo XR Destino",
+        f_duration: "Duração Máxima (min)",
+        f_location: "Localização na Galeria / Sala",
+        f_autonomy: "Carta de Autonomia do Artista & Não-Interferência",
+        sec3: "3. Capítulos Multi-Perspetiva",
+        dossier_tag: "Dossier de Conceção & Co-Design de Património Cultural em XR",
+        c_medium: "Técnica & Material",
+        c_dim: "Dimensões Físicas",
+        c_curator: "Coordenação Curatorial",
+        c_ergo: "Galeria & Ergonomia",
+        sec_renders: "🖼️ Renders Visuais & Imagens de Referência",
+        sec_maquette: "📐 Maqueta Espacial da Instalação & Protótipo Interativo",
+        maq1_title: "Maqueta Espacial da Galeria (Planta & Alçado)",
+        maq2_title: "Visualização Interativa & Mapa de Hotspots",
+        sec_chapters: "📚 Narrativa Multi-Perspetiva & Especificação de Hotspots",
+        sec_tam: "📊 Protocolo de Avaliação (TAM)",
+        tam_sub: "Micro-Questionário In-Situ ao Visitante (Escala de Likert de 5 Pontos)",
+        footer_gen: "Gerado pelo XR Heritage Framework Toolkit (UCP Porto)",
+        footer_unity: "JSON Compatível Pronto para Importação no Unity (Tools > XR Heritage Framework)",
+        modal_title: "🏛️ Bem-vindo ao XR Heritage Framework",
+        modal_intro: "Este estúdio visual é parte de um projeto de investigação doutoral na <strong>Escola das Artes da Universidade Católica Portuguesa (UCP Porto)</strong> por <em>Manuel Silva</em> (sob orientação do <em>Prof. Doutor Luís Teixeira</em>). Estabelece uma ponte validada entre <strong>mediação criativa assistida por IA</strong>, <strong>autonomia curatorial</strong> e <strong>implementação em motores de jogo XR</strong>.",
+        tab_track1: "🎨 Para Artistas & Curadores (Sem Código)",
+        tab_track2: "💻 Para Programadores & Perfil Técnico",
+        tab_research: "🔬 Investigação & Modelo TAM",
+        step1_title: "Co-Criação com o Assistente IA",
+        step1_desc: "Copie o nosso Master AI Prompt e cole-o no ChatGPT, Claude, Gemini ou Perplexity. A IA perguntará primeiro pelo seu papel (Artista ou Curador) para adaptar a linguagem, proteger a sua voz criativa e desenhar a experiência.",
+        btn_copy_prompt: "Copiar Master Prompt da IA",
+        step2_title: "Visualizar & Gerar Dossier em PDF",
+        step2_desc: "Cole o JSON gerado pela IA diretamente neste Estúdio. Pré-visualize a maqueta espacial da galeria e a janela de visualização interativa, anexe os renders visuais e clique em Guardar Relatório Visual (PDF).",
+        step3_title: "Transição para Desenvolvedores ou Guia Unity",
+        step3_desc: "Clique em Exportar .JSON Unity para enviar à equipa técnica. Ou se quiser testar você mesmo no Unity, o nosso guia oferece um passo a passo suave e sem programação.",
+        dev_pkg_title: "Instalar Pacote Unity (UPM)",
+        dev_pkg_desc: "Adicione o pacote via URL Git no Gestor de Pacotes do Unity (Unity 2021.3 LTS+):",
+        dev_skills_title: "Skills Modulares de IA & Antigravity",
+        dev_skills_desc: "Para programadores CLI / Antigravity / Sistemas Agênticos, todas as 4 skills modulares estão em AI_Skills/. Pode executar agentes individuais para diagnóstico, mapeamento de affordances e avaliação TAM.",
+        dev_wizard_title: "Assistente de Configuração em 1 Clique",
+        dev_wizard_desc: "Abra Tools > XR Heritage Framework > Experience Setup Wizard no Unity. Importar o JSON instala automaticamente os SDKs AR/VR, constrói a cena, cria os pins 3D e liga a interface de utilizador.",
+        res_title: "Contexto de Investigação Doutoral",
+        res_desc: "Desenvolvido na Escola das Artes da Universidade Católica Portuguesa (UCP Porto). Baseado num benchmark empírico de mais de 80 projetos mundiais de XR em museus (2005–2024) e avaliado por curadores, artistas e tecnólogos.",
+        tam_title: "Integração do Modelo de Aceitação Tecnológica (TAM)",
+        tam_desc: "O framework integra questionários in-situ que medem Utilidade Percebida (PU), Facilidade de Uso (PEOU), Respeito Curatorial (CR) e Preservação da Autonomia do Artista (AAP), registando dados anónimos em CSV.",
+        dont_show: "Não mostrar esta janela de boas-vindas automaticamente da próxima vez",
+        btn_enter: "Entrar no Estúdio 🚀",
+        dev_options: [
+          { val: "MuseumTabletAR", text: "Tablet de Museu em AR (Portátil/Suporte)" },
+          { val: "MobileHandheldAR", text: "Smartphone do Visitante em AR (BYOD)" },
+          { val: "SpatialHeadsetMR", text: "Óculos de Realidade Mista (Passthrough)" },
+          { val: "ImmersiveVR", text: "Óculos de Realidade Virtual Imersiva (VR)" }
+        ]
+      }
+    };
+
+    let currentLang = localStorage.getItem('xr_heritage_lang') || 'en';
+
+    function setLanguage(lang) {
+      currentLang = lang;
+      localStorage.setItem('xr_heritage_lang', lang);
+      document.querySelectorAll('#lang_en, #modal_lang_en').forEach(b => b.classList.toggle('active', lang === 'en'));
+      document.querySelectorAll('#lang_pt, #modal_lang_pt').forEach(b => b.classList.toggle('active', lang === 'pt'));
+
+      const t = I18N[lang];
+      if (document.getElementById('app_header_title')) document.getElementById('app_header_title').textContent = t.app_title;
+      if (document.getElementById('lbl_help_btn')) document.getElementById('lbl_help_btn').textContent = t.help_btn;
+      if (document.getElementById('lbl_load_photo')) document.getElementById('lbl_load_photo').textContent = t.load_photo;
+      if (document.getElementById('lbl_load_sculpture')) document.getElementById('lbl_load_sculpture').textContent = t.load_sculpture;
+      if (document.getElementById('lbl_export_json')) document.getElementById('lbl_export_json').textContent = t.export_json;
+      if (document.getElementById('lbl_save_pdf')) document.getElementById('lbl_save_pdf').textContent = t.save_pdf;
+
+      if (document.getElementById('sec_hdr_1')) document.getElementById('sec_hdr_1').textContent = t.sec1;
+      if (document.getElementById('lbl_f_title')) document.getElementById('lbl_f_title').textContent = t.f_title;
+      if (document.getElementById('lbl_f_artist')) document.getElementById('lbl_f_artist').textContent = t.f_artist;
+      if (document.getElementById('lbl_f_year')) document.getElementById('lbl_f_year').textContent = t.f_year;
+      if (document.getElementById('lbl_f_medium')) document.getElementById('lbl_f_medium').textContent = t.f_medium;
+      if (document.getElementById('lbl_f_dim')) document.getElementById('lbl_f_dim').textContent = t.f_dim;
+      if (document.getElementById('lbl_f_curator')) document.getElementById('lbl_f_curator').textContent = t.f_curator;
+      if (document.getElementById('lbl_f_museum')) document.getElementById('lbl_f_museum').textContent = t.f_museum;
+
+      if (document.getElementById('sec_hdr_2')) document.getElementById('sec_hdr_2').textContent = t.sec2;
+      if (document.getElementById('lbl_f_device')) document.getElementById('lbl_f_device').textContent = t.f_device;
+      if (document.getElementById('lbl_f_duration')) document.getElementById('lbl_f_duration').textContent = t.f_duration;
+      if (document.getElementById('lbl_f_location')) document.getElementById('lbl_f_location').textContent = t.f_location;
+      if (document.getElementById('lbl_f_autonomy')) document.getElementById('lbl_f_autonomy').textContent = t.f_autonomy;
+
+      if (document.getElementById('sec_hdr_3')) document.getElementById('sec_hdr_3').textContent = t.sec3;
+
+      if (document.getElementById('lbl_dossier_tag')) document.getElementById('lbl_dossier_tag').textContent = t.dossier_tag;
+      if (document.getElementById('lbl_c_medium')) document.getElementById('lbl_c_medium').textContent = t.c_medium;
+      if (document.getElementById('lbl_c_dim')) document.getElementById('lbl_c_dim').textContent = t.c_dim;
+      if (document.getElementById('lbl_c_curator')) document.getElementById('lbl_c_curator').textContent = t.c_curator;
+      if (document.getElementById('lbl_c_ergo')) document.getElementById('lbl_c_ergo').textContent = t.c_ergo;
+
+      if (document.getElementById('sec_renders_title')) document.getElementById('sec_renders_title').textContent = t.sec_renders;
+      if (document.getElementById('sec_maquette_title')) document.getElementById('sec_maquette_title').textContent = t.sec_maquette;
+      if (document.getElementById('lbl_maq1_title')) document.getElementById('lbl_maq1_title').textContent = t.maq1_title;
+      if (document.getElementById('lbl_maq2_title')) document.getElementById('lbl_maq2_title').textContent = t.maq2_title;
+
+      if (document.getElementById('sec_chapters_title')) document.getElementById('sec_chapters_title').textContent = t.sec_chapters;
+      if (document.getElementById('sec_tam_title')) document.getElementById('sec_tam_title').textContent = t.sec_tam;
+      if (document.getElementById('lbl_tam_sub')) document.getElementById('lbl_tam_sub').textContent = t.tam_sub;
+
+      if (document.getElementById('lbl_footer_gen')) document.getElementById('lbl_footer_gen').textContent = t.footer_gen;
+      if (document.getElementById('lbl_footer_unity')) document.getElementById('lbl_footer_unity').textContent = t.footer_unity;
+
+      // Update Device Dropdown options
+      const devSelect = document.getElementById('inp_device');
+      if (devSelect && t.dev_options) {
+        const curVal = devSelect.value;
+        devSelect.innerHTML = t.dev_options.map(o => `<option value="${o.val}">${o.text}</option>`).join('');
+        devSelect.value = curVal;
+      }
+
+      // Modal elements
+      if (document.getElementById('modal_title')) document.getElementById('modal_title').innerHTML = t.modal_title;
+      if (document.getElementById('modal_intro')) document.getElementById('modal_intro').innerHTML = t.modal_intro;
+      if (document.getElementById('tab_btn_track1')) document.getElementById('tab_btn_track1').textContent = t.tab_track1;
+      if (document.getElementById('tab_btn_track2')) document.getElementById('tab_btn_track2').textContent = t.tab_track2;
+      if (document.getElementById('tab_btn_research')) document.getElementById('tab_btn_research').textContent = t.tab_research;
+      if (document.getElementById('m_step1_title')) document.getElementById('m_step1_title').textContent = t.step1_title;
+      if (document.getElementById('m_step1_desc')) document.getElementById('m_step1_desc').textContent = t.step1_desc;
+      if (document.getElementById('m_btn_copy')) document.getElementById('m_btn_copy').textContent = t.btn_copy_prompt;
+      if (document.getElementById('m_step2_title')) document.getElementById('m_step2_title').textContent = t.step2_title;
+      if (document.getElementById('m_step2_desc')) document.getElementById('m_step2_desc').textContent = t.step2_desc;
+      if (document.getElementById('m_step3_title')) document.getElementById('m_step3_title').textContent = t.step3_title;
+      if (document.getElementById('m_step3_desc')) document.getElementById('m_step3_desc').textContent = t.step3_desc;
+      if (document.getElementById('m_dev_pkg_title')) document.getElementById('m_dev_pkg_title').textContent = t.dev_pkg_title;
+      if (document.getElementById('m_dev_pkg_desc')) document.getElementById('m_dev_pkg_desc').textContent = t.dev_pkg_desc;
+      if (document.getElementById('m_dev_skills_title')) document.getElementById('m_dev_skills_title').textContent = t.dev_skills_title;
+      if (document.getElementById('m_dev_skills_desc')) document.getElementById('m_dev_skills_desc').textContent = t.dev_skills_desc;
+      if (document.getElementById('m_dev_wizard_title')) document.getElementById('m_dev_wizard_title').textContent = t.dev_wizard_title;
+      if (document.getElementById('m_dev_wizard_desc')) document.getElementById('m_dev_wizard_desc').textContent = t.dev_wizard_desc;
+      if (document.getElementById('m_res_title')) document.getElementById('m_res_title').textContent = t.res_title;
+      if (document.getElementById('m_res_desc')) document.getElementById('m_res_desc').textContent = t.res_desc;
+      if (document.getElementById('m_tam_title')) document.getElementById('m_tam_title').textContent = t.tam_title;
+      if (document.getElementById('m_tam_desc')) document.getElementById('m_tam_desc').textContent = t.tam_desc;
+      if (document.getElementById('lbl_dont_show')) document.getElementById('lbl_dont_show').textContent = t.dont_show;
+      if (document.getElementById('btn_enter_studio')) document.getElementById('btn_enter_studio').textContent = t.btn_enter;
+    }
+function openWelcomeModal() {
+      document.getElementById('welcomeModalBackdrop').classList.add('active');
+    }
+
+    function closeWelcomeModal() {
+      if (document.getElementById('chk_hide_welcome').checked) {
+        localStorage.setItem('xr_heritage_hide_welcome', 'true');
+      }
+      document.getElementById('welcomeModalBackdrop').classList.remove('active');
+    }
+
+    function switchModalTab(tabKey) {
+      document.querySelectorAll('.modal-tab-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById('tab_btn_' + tabKey).classList.add('active');
+      document.getElementById('modal_tab_track1').style.display = (tabKey === 'track1') ? 'block' : 'none';
+      document.getElementById('modal_tab_track2').style.display = (tabKey === 'track2') ? 'block' : 'none';
+      document.getElementById('modal_tab_research').style.display = (tabKey === 'research') ? 'block' : 'none';
+    }
+
+    function copyMasterPromptFromModal() {
+      fetch('https://raw.githubusercontent.com/LeunamAvlis/XR-Heritage-Framework-Toolkit/main/ALL_IN_ONE_PROMPT.txt')
+        .then(r => r.text())
+        .then(text => {
+          navigator.clipboard.writeText(text);
+          alert(currentLang === 'pt' ? 'Master AI Prompt copiado para a área de transferência!' : 'Master AI Prompt copied to clipboard!');
+        })
+        .catch(() => {
+          window.open('https://github.com/LeunamAvlis/XR-Heritage-Framework-Toolkit/blob/main/ALL_IN_ONE_PROMPT.txt', '_blank');
+        });
+    }
+
+    // Check if user already opted to hide the welcome modal
+    if (localStorage.getItem('xr_heritage_hide_welcome') === 'true') {
+      document.getElementById('welcomeModalBackdrop').classList.remove('active');
+    }
+    setLanguage(currentLang);
+
+  </script>
+</body>
+</html>
